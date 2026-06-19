@@ -19,6 +19,12 @@ Shared employee onboarding and teaching timetable application for UKVS.
 6. Create the first application user.
 7. In **Table Editor > profiles**, change that user's role to `admin`.
 
+If the initial migration was installed before June 20, 2026, also run:
+
+`supabase/migrations/202606200002_fix_empty_student_clash.sql`
+
+This corrects an empty-result check that otherwise reports a student clash for every timetable placement.
+
 Available roles:
 
 - `admin`: manages users and all timetable data.
