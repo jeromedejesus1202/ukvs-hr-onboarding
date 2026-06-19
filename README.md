@@ -4,8 +4,8 @@ Shared employee onboarding and teaching timetable application for UKVS.
 
 ## Current State
 
-- `index.html` contains the current onboarding and timetable draft.
-- The timetable currently continues to use browser storage until the Supabase client adapter is enabled.
+- `index.html` contains the onboarding and shared timetable application.
+- `supabase-client.js` connects authentication, people, carriers, schedules, drag-and-drop moves, and live updates to Supabase.
 - `supabase/migrations/202606200001_initial_timetable.sql` creates the shared cloud schema.
 - `supabase-config.js` contains the public Supabase project URL and publishable key. These values are safe for browser use because access is enforced by authentication and Row Level Security.
 
@@ -46,9 +46,17 @@ The `move_carrier` database function:
 
 ## Local Preview
 
-Open `index.html` directly in a browser. Cloud synchronization will be introduced in the next application integration step after the migration and authentication settings are confirmed.
+Open `index.html` directly in a browser while connected to the internet. Sign in using a Supabase Authentication user. The public Supabase SDK is loaded from jsDelivr.
+
+When one signed-in user changes the timetable, other signed-in users receive the database update through Supabase Realtime.
 
 ## Deployment
 
-This static application can be deployed using GitHub Pages, Vercel, Netlify, or another static hosting provider. GitHub Pages is suitable once authentication redirects are configured in Supabase.
+This static application can be deployed using GitHub Pages, Vercel, Netlify, or another static hosting provider.
 
+For GitHub Pages:
+
+1. Merge the implementation branch into `main`.
+2. In GitHub, open **Settings > Pages**.
+3. Select **Deploy from a branch** and choose `main` / root.
+4. Add the resulting Pages URL to **Supabase > Authentication > URL Configuration > Redirect URLs**.

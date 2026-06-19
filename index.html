@@ -6,6 +6,9 @@
 <title>UKVS HR Onboarding</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-client.js"></script>
 <style>
 :root{
   --navy:#002366;--navy-dark:#001a4d;--navy-light:#e6ebf5;--navy-mid:#0a3580;
@@ -309,6 +312,17 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .tt-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec)}
 .tt-dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
 .tt-dot.warning{background:var(--red)}
+.cloud-auth{position:fixed;inset:0;z-index:12000;background:rgba(0,23,66,.72);display:flex;align-items:center;justify-content:center;padding:1rem}
+.cloud-auth.hidden{display:none}
+.cloud-auth-panel{width:min(420px,100%);background:white;border-radius:10px;padding:1.5rem;box-shadow:var(--shadow-lg)}
+.cloud-auth-panel h2{font-size:22px;color:var(--navy);margin-bottom:4px}
+.cloud-auth-panel p{color:var(--text-sec);font-size:13px;margin-bottom:1rem}
+.cloud-auth-error{display:none;background:var(--red-bg);color:var(--red);padding:8px 10px;border-radius:7px;margin-bottom:10px;font-size:12px;font-weight:700}
+.cloud-auth-error.show{display:block}
+.cloud-status{display:flex;align-items:center;gap:7px;padding:8px 12px;margin:0 .75rem 10px;color:rgba(255,255,255,.7);font-size:11px;border:1px solid rgba(255,255,255,.12);border-radius:8px}
+.cloud-status i{color:#54d391}
+.cloud-user{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.cloud-logout{background:none;border:0;color:rgba(255,255,255,.65);cursor:pointer;padding:2px}
 @media(max-width:1050px){.tt-layout{grid-template-columns:1fr}.tt-side{position:static}.tt-editor-grid{grid-template-columns:1fr 1fr}.tt-person-list{max-height:180px}}
 @media(max-width:720px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin-left:0;padding:1rem}.nav-body{display:flex;gap:4px;overflow:auto}.nav-section,.sidebar-footer{display:none}.nav-item{min-width:max-content}.tt-editor-grid{grid-template-columns:1fr}.field-row{grid-template-columns:1fr}}
 
@@ -326,6 +340,16 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 <body>
 
 <div class="copy-toast" id="copyToast"><i class="ti ti-check"></i> <span id="toastMsg">Copied!</span></div>
+<div class="cloud-auth" id="cloudAuth">
+  <form class="cloud-auth-panel" onsubmit="cloudSignIn(event)">
+    <h2>UKVS sign in</h2>
+    <p>Sign in to access the shared timetable.</p>
+    <div class="cloud-auth-error" id="cloudAuthError"></div>
+    <div class="field"><label>Email</label><input type="email" id="cloudEmail" autocomplete="username" required></div>
+    <div class="field"><label>Password</label><input type="password" id="cloudPassword" autocomplete="current-password" required></div>
+    <button class="btn btn-primary" id="cloudSignInBtn" style="width:100%" type="submit"><i class="ti ti-login"></i> Sign in</button>
+  </form>
+</div>
 
 <!-- Modal -->
 <div class="modal-overlay" id="docModal" onclick="closeModal(event)">
@@ -359,6 +383,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
       <button class="nav-item" id="nav-admin" onclick="showView('admin')"><i class="ti ti-settings-2"></i> Responsibilities</button>
       <button class="nav-item" id="nav-fields" onclick="showView('fields')"><i class="ti ti-code"></i> GHL field codes</button>
     </div>
+    <div class="cloud-status" id="cloudStatus"><i class="ti ti-cloud"></i><span class="cloud-user" id="cloudUser">Connecting...</span><button class="cloud-logout" title="Sign out" onclick="cloudSignOut()"><i class="ti ti-logout"></i></button></div>
     <div class="sidebar-footer">UKVS · HR System v5 Draft</div>
   </aside>
 
@@ -1441,7 +1466,51 @@ const TT_MONTHS=[
 const TT_DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const TT_TIMES=['07:30','08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30'];
 let ttState={people:[],sessions:[]};
-let ttPeopleTab='teacher',ttWeek=0,ttReady=false,ttDraggedId='';
+let ttPeopleTab='teacher',ttWeek=0,ttReady=false,ttDraggedId='',ttRealtimeChannel=null,ttSyncing=false;
+
+async function cloudSignIn(event){
+  event.preventDefault();
+  const btn=document.getElementById('cloudSignInBtn'),errorBox=document.getElementById('cloudAuthError');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Signing in...';errorBox.classList.remove('show');
+  try{
+    await UKVSCloud.signIn(document.getElementById('cloudEmail').value.trim(),document.getElementById('cloudPassword').value);
+  }catch(error){
+    errorBox.textContent=error.message||'Unable to sign in.';errorBox.classList.add('show');
+  }finally{
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-login"></i> Sign in';
+  }
+}
+async function cloudSignOut(){
+  try{await UKVSCloud.signOut();}catch(error){showToast(error.message||'Unable to sign out');}
+}
+async function cloudApplySession(session){
+  const auth=document.getElementById('cloudAuth'),user=document.getElementById('cloudUser');
+  if(!session){auth.classList.remove('hidden');user.textContent='Not signed in';ttState={people:[],sessions:[]};if(ttReady)ttRenderAll();return;}
+  auth.classList.add('hidden');user.textContent=session.user.email||'Signed in';
+  await ttSyncCloud();
+  if(!ttRealtimeChannel)ttRealtimeChannel=UKVSCloud.subscribe(()=>ttQueueCloudSync());
+}
+let ttSyncTimer=null;
+function ttQueueCloudSync(){clearTimeout(ttSyncTimer);ttSyncTimer=setTimeout(()=>ttSyncCloud(),180);}
+async function ttSyncCloud(){
+  if(ttSyncing)return;
+  ttSyncing=true;
+  try{
+    ttState=await UKVSCloud.loadState();
+    if(ttReady)ttRenderAll();
+  }catch(error){
+    showToast(error.message||'Cloud sync failed');
+  }finally{ttSyncing=false;}
+}
+async function cloudBoot(){
+  if(!window.UKVSCloud?.client){
+    document.getElementById('cloudAuthError').textContent='Supabase could not be loaded. Check your internet connection.';
+    document.getElementById('cloudAuthError').classList.add('show');return;
+  }
+  UKVSCloud.onAuthChange(session=>cloudApplySession(session));
+  await cloudApplySession(await UKVSCloud.session());
+}
+window.addEventListener('DOMContentLoaded',cloudBoot);
 
 function ttEscape(value){
   return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -1452,10 +1521,9 @@ function ttLoad(){
     if(saved){const parsed=JSON.parse(saved);if(parsed&&Array.isArray(parsed.people)&&Array.isArray(parsed.sessions))ttState=parsed;}
   }catch(e){}
 }
-function ttPersist(){try{localStorage.setItem('ukvs_timetable_v1',JSON.stringify(ttState));}catch(e){}}
-function ttInit(){
+function ttPersist(){try{localStorage.setItem('ukvs_timetable_cache_v1',JSON.stringify(ttState));}catch(e){}}
+async function ttInit(){
   if(!ttReady){
-    ttLoad();
     const now=new Date(),base=now.getMonth()>=8?now.getFullYear():now.getFullYear()-1;
     const yearSelect=document.getElementById('ttAcademicYear');
     [base-1,base,base+1,base+2].forEach(y=>yearSelect.add(new Option(`${y}/${String(y+1).slice(-2)}`,String(y))));
@@ -1468,7 +1536,7 @@ function ttInit(){
     TT_TIMES.forEach(t=>timeSelect.add(new Option(t,t)));
     ttReady=true;
   }
-  ttRenderAll();
+  await ttSyncCloud();
 }
 function ttPeriod(){
   const startYear=parseInt(document.getElementById('ttAcademicYear').value,10);
@@ -1562,26 +1630,32 @@ function ttDraggedSession(event){
   const id=event.dataTransfer.getData('text/plain')||ttDraggedId;
   return ttState.sessions.find(s=>s.id===id);
 }
-function ttDropToCell(event,day,time,target){
+async function ttDropToCell(event,day,time,target){
   event.preventDefault();target.classList.remove('drag-over');
   const original=ttDraggedSession(event);if(!original)return;
   const moved={...original,monthKey:ttPeriod().key,week:ttWeek,day,time,scheduled:true};
   const conflicts=ttConflictMessages(moved);
   if(conflicts.length){ttShowClashes(conflicts);showToast('Move blocked by clash');return;}
-  const index=ttState.sessions.findIndex(s=>s.id===moved.id);ttState.sessions[index]=moved;
-  ttPersist();ttResetEditor();ttRenderAll();showToast('Class moved');
+  try{
+    const saved=await UKVSCloud.moveCarrier(original,ttWeek,day,time);
+    const index=ttState.sessions.findIndex(s=>s.id===saved.id);ttState.sessions[index]=saved;
+    ttPersist();ttResetEditor();ttRenderAll();showToast('Class moved');
+  }catch(error){ttShowClashes([error.message||'Move failed']);showToast('Move blocked');}
 }
-function ttDropToTray(event,target){
+async function ttDropToTray(event,target){
   event.preventDefault();target.classList.remove('drag-over');
   const original=ttDraggedSession(event);if(!original)return;
-  const index=ttState.sessions.findIndex(s=>s.id===original.id);
-  ttState.sessions[index]={...original,monthKey:ttPeriod().key,week:null,day:null,time:'',scheduled:false};
-  ttPersist();ttResetEditor();ttRenderAll();showToast('Class returned to carrier tray');
+  try{
+    const saved=await UKVSCloud.unscheduleCarrier(original);
+    const index=ttState.sessions.findIndex(s=>s.id===saved.id);ttState.sessions[index]=saved;
+    ttPersist();ttResetEditor();ttRenderAll();showToast('Class returned to carrier tray');
+  }catch(error){ttShowClashes([error.message||'Unable to unschedule class']);}
 }
-function ttDeleteCarrier(id,event){
+async function ttDeleteCarrier(id,event){
   event.stopPropagation();const session=ttState.sessions.find(s=>s.id===id);
   if(!session||!confirm(`Delete ${ttCarrierTitle(session)}?`))return;
-  ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttRenderAll();ttResetEditor();
+  try{await UKVSCloud.deleteCarrier(id);ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttRenderAll();ttResetEditor();}
+  catch(error){showToast(error.message||'Unable to delete carrier');}
 }
 function ttSelectCell(day,time,cell){
   ttResetEditor();
@@ -1600,18 +1674,21 @@ function ttSetPeopleTab(type){
   if(type==='teacher'){yearLevel.value='';yearGroup.value='';}
   ttRenderPeople();
 }
-function ttAddPerson(){
+async function ttAddPerson(){
   const name=document.getElementById('ttPersonName').value.trim();
   if(!name){showToast('Enter a name');return;}
-  ttState.people.push({id:`p_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,name,type:ttPeopleTab,yearLevel:document.getElementById('ttPersonYearLevel').value,yearGroup:document.getElementById('ttPersonYearGroup').value});
-  document.getElementById('ttPersonName').value='';
-  ttPersist();ttRenderAll();
+  try{
+    const person=await UKVSCloud.addPerson({name,type:ttPeopleTab,yearLevel:document.getElementById('ttPersonYearLevel').value,yearGroup:document.getElementById('ttPersonYearGroup').value});
+    ttState.people.push(person);document.getElementById('ttPersonName').value='';ttPersist();ttRenderAll();
+  }catch(error){showToast(error.message||'Unable to add person');}
 }
-function ttDeletePerson(id){
+async function ttDeletePerson(id){
   const person=ttPerson(id);if(!person||!confirm(`Remove ${person.name}?`))return;
-  ttState.people=ttState.people.filter(p=>p.id!==id);
-  ttState.sessions=ttState.sessions.filter(s=>s.teacherId!==id).map(s=>({...s,studentIds:(s.studentIds||[]).filter(studentId=>studentId!==id)}));
-  ttPersist();ttRenderAll();ttResetEditor();
+  try{
+    await UKVSCloud.deletePerson(id);ttState.people=ttState.people.filter(p=>p.id!==id);
+    ttState.sessions=ttState.sessions.filter(s=>s.teacherId!==id).map(s=>({...s,studentIds:(s.studentIds||[]).filter(studentId=>studentId!==id)}));
+    ttPersist();ttRenderAll();ttResetEditor();
+  }catch(error){showToast('This person may still be assigned to a class. Remove those assignments first.');}
 }
 function ttRenderPeople(){
   const people=ttState.people.filter(p=>p.type===ttPeopleTab).sort((a,b)=>a.name.localeCompare(b.name));
@@ -1628,13 +1705,15 @@ function ttRenderSelectors(selectedStudents=[]){
 }
 function ttSelectedStudents(){return Array.from(document.querySelectorAll('input[name="ttSessionStudents"]:checked')).map(el=>el.value);}
 function ttCandidate(){
+  const id=document.getElementById('ttSessionId').value;
+  const existing=ttState.sessions.find(session=>session.id===id);
   return {
-    id:document.getElementById('ttSessionId').value||`s_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+    id:id||`s_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
     monthKey:ttPeriod().key,week:ttWeek,day:parseInt(document.getElementById('ttSessionDay').value,10),
     time:document.getElementById('ttSessionTime').value,teacherId:document.getElementById('ttSessionTeacher').value,
     subject:document.getElementById('ttSessionSubject').value.trim(),yearLevel:document.getElementById('ttSessionYearLevel').value,
     yearGroup:document.getElementById('ttSessionYearGroup').value,classGroup:document.getElementById('ttSessionClassGroup').value,
-    studentIds:ttSelectedStudents(),scheduled:true
+    studentIds:ttSelectedStudents(),scheduled:true,version:existing?.version||1
   };
 }
 function ttConflictMessages(candidate){
@@ -1649,22 +1728,26 @@ function ttConflictMessages(candidate){
   });
   return [...new Set(messages)];
 }
-function ttSaveSession(){
+async function ttSaveSession(){
   const session=ttCandidate(),alert=document.getElementById('ttClashAlert');
   if(!ttValidateCarrier(session,alert))return;
   const conflicts=ttConflictMessages(session);
   if(conflicts.length){ttShowClashes(conflicts);return;}
-  const index=ttState.sessions.findIndex(s=>s.id===session.id);
-  if(index>=0)ttState.sessions[index]=session;else ttState.sessions.push(session);
-  ttPersist();ttResetEditor();ttRenderAll();showToast('Lesson scheduled');
+  try{
+    const saved=await UKVSCloud.saveCarrier(session),index=ttState.sessions.findIndex(s=>s.id===session.id);
+    if(index>=0)ttState.sessions[index]=saved;else ttState.sessions.push(saved);
+    ttPersist();ttResetEditor();ttRenderAll();showToast('Lesson scheduled');
+  }catch(error){ttShowClashes([error.message||'Unable to save lesson']);}
 }
-function ttSaveCarrier(){
+async function ttSaveCarrier(){
   const session=ttCandidate(),alert=document.getElementById('ttClashAlert');
   if(!ttValidateCarrier(session,alert))return;
   session.scheduled=false;session.week=null;session.day=null;session.time='';
-  const index=ttState.sessions.findIndex(s=>s.id===session.id);
-  if(index>=0)ttState.sessions[index]=session;else ttState.sessions.push(session);
-  ttPersist();ttResetEditor();ttRenderAll();showToast('Carrier saved');
+  try{
+    const saved=await UKVSCloud.saveCarrier(session),index=ttState.sessions.findIndex(s=>s.id===session.id);
+    if(index>=0)ttState.sessions[index]=saved;else ttState.sessions.push(saved);
+    ttPersist();ttResetEditor();ttRenderAll();showToast('Carrier saved');
+  }catch(error){ttShowClashes([error.message||'Unable to save carrier']);}
 }
 function ttValidateCarrier(session,alert){
   if(!session.teacherId||!session.subject||!session.yearGroup||!session.classGroup||!session.studentIds.length){
@@ -1692,9 +1775,10 @@ function ttEditSession(id,event){
   document.getElementById('ttDeleteSessionBtn').style.display='';
   document.getElementById('ttClashAlert').classList.remove('show');
 }
-function ttDeleteSession(){
+async function ttDeleteSession(){
   const id=document.getElementById('ttSessionId').value;if(!id||!confirm('Delete this lesson?'))return;
-  ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttResetEditor();ttRenderAll();
+  try{await UKVSCloud.deleteCarrier(id);ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttResetEditor();ttRenderAll();}
+  catch(error){showToast(error.message||'Unable to delete lesson');}
 }
 function ttResetEditor(){
   const id=document.getElementById('ttSessionId');if(!id)return;
@@ -1711,23 +1795,30 @@ function ttRenderClashStatus(){
   const clashes=ttCurrentMonthClashes(),status=document.getElementById('ttClashStatus');
   status.innerHTML=`<span class="tt-dot ${clashes.length?'warning':''}"></span><span>${clashes.length?`${clashes.length} conflicting lesson${clashes.length===1?'':'s'}`:'No clashes'}</span>`;
 }
-function ttClearMonth(){
+async function ttClearMonth(){
   const key=ttPeriod().key;if(!confirm('Clear all lessons for this month?'))return;
-  ttState.sessions=ttState.sessions.filter(s=>s.monthKey!==key);ttPersist();ttResetEditor();ttRenderAll();
+  try{
+    const monthSessions=ttState.sessions.filter(s=>s.monthKey===key);
+    await Promise.all(monthSessions.map(s=>UKVSCloud.deleteCarrier(s.id)));
+    ttState.sessions=ttState.sessions.filter(s=>s.monthKey!==key);ttPersist();ttResetEditor();ttRenderAll();
+  }catch(error){showToast(error.message||'Unable to clear month');}
 }
-function ttLoadExample(){
-  const findOrAdd=(name,type,yearLevel='',yearGroup='')=>{
+async function ttLoadExample(){
+  const findOrAdd=async(name,type,yearLevel='',yearGroup='')=>{
     let person=ttState.people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.type===type);
-    if(!person){person={id:`p_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,name,type,yearLevel,yearGroup};ttState.people.push(person);}
+    if(!person){person=await UKVSCloud.addPerson({name,type,yearLevel,yearGroup});ttState.people.push(person);}
     return person;
   };
-  const teacher=findOrAdd('Andromachi','teacher');
-  const students=['Avery','Randy','Levi'].map(name=>findOrAdd(name,'student','Primary','Year 5'));
+  try{
+  const teacher=await findOrAdd('Andromachi','teacher');
+  const students=await Promise.all(['Avery','Randy','Levi'].map(name=>findOrAdd(name,'student','Primary','Year 5')));
   const key=ttPeriod().key;
   if(!ttState.sessions.some(s=>s.monthKey===key&&s.week===0&&s.day===0&&s.time==='07:30')){
-    ttState.sessions.push({id:`s_${Date.now()}`,monthKey:key,week:0,day:0,time:'07:30',teacherId:teacher.id,subject:'Maths',yearLevel:'Primary',yearGroup:'Year 5',classGroup:'A',studentIds:students.map(s=>s.id),scheduled:true});
+    const saved=await UKVSCloud.saveCarrier({id:'',monthKey:key,week:0,day:0,time:'07:30',teacherId:teacher.id,subject:'Maths',yearLevel:'Primary',yearGroup:'Year 5',classGroup:'A',studentIds:students.map(s=>s.id),scheduled:true,version:1});
+    ttState.sessions.push(saved);
   }
   ttPersist();ttRenderAll();showToast('Example loaded');
+  }catch(error){ttShowClashes([error.message||'Unable to load example']);}
 }
 function ttParseCsvLine(line){
   const values=[];let value='',quoted=false;
@@ -1737,18 +1828,19 @@ function ttParseCsvLine(line){
 function ttImportCsv(event){
   const file=event.target.files?.[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=()=>{
+  reader.onload=async()=>{
     const lines=String(reader.result).replace(/\r/g,'').split('\n').filter(Boolean);
     if(lines.length<2){showToast('CSV has no records');return;}
     const headers=ttParseCsvLine(lines[0]).map(h=>h.toLowerCase().replace(/[\s_-]/g,''));
     let added=0;
-    lines.slice(1).forEach(line=>{
+    for(const line of lines.slice(1)){
       const row=ttParseCsvLine(line),get=name=>row[headers.indexOf(name)]||'';
       const name=get('name').trim(),type=get('type').trim().toLowerCase();
-      if(!name||!['teacher','student'].includes(type))return;
-      if(ttState.people.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.type===type))return;
-      ttState.people.push({id:`p_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,name,type,yearLevel:get('yearlevel').trim(),yearGroup:get('yeargroup').trim()});added++;
-    });
+      if(!name||!['teacher','student'].includes(type))continue;
+      if(ttState.people.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.type===type))continue;
+      try{ttState.people.push(await UKVSCloud.addPerson({name,type,yearLevel:get('yearlevel').trim(),yearGroup:get('yeargroup').trim()}));added++;}
+      catch(error){showToast(`Could not import ${name}`);}
+    }
     ttPersist();ttRenderAll();showToast(`${added} people imported`);event.target.value='';
   };
   reader.readAsText(file);
