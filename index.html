@@ -1,0 +1,1849 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UKVS HR Onboarding</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#002366;--navy-dark:#001a4d;--navy-light:#e6ebf5;--navy-mid:#0a3580;
+  --gold:#f6a017;--gold-light:#fef3dc;--gold-dark:#d4880f;
+  --white:#ffffff;--bg:#f4f5f8;--border:#dde1eb;
+  --text:#0d1b3e;--text-sec:#5a6a8a;--text-muted:#97a3b8;
+  --green:#1a7a4a;--green-bg:#e6f5ee;
+  --red:#c0392b;--red-bg:#fbeaea;
+  --radius-md:10px;--radius-lg:14px;
+  --shadow:0 2px 12px rgba(0,35,102,.08);--shadow-lg:0 8px 40px rgba(0,35,102,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+h1,h2,h3,h4{font-family:'League Spartan',sans-serif}
+input,select,textarea,button{font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text)}
+input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-md);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,35,102,.1)}
+textarea{resize:vertical;min-height:72px}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a8a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+/* Layout */
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;flex-shrink:0;background:var(--navy);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:20;display:flex;flex-direction:column}
+.main{margin-left:240px;flex:1;padding:2.5rem 2rem;min-height:100vh}
+.form-wrap{max-width:700px}
+.admin-wrap{max-width:940px}
+
+/* Sidebar */
+.sidebar-header{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo img{height:38px;width:auto;object-fit:contain;display:block}
+.sidebar-tagline{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-top:8px}
+.nav-body{padding:1rem .75rem;flex:1}
+.nav-section{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin:1.1rem 0 .4rem .5rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-md);font-size:13px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9)}
+.nav-item.active{background:var(--gold);color:var(--navy);font-weight:700}
+.nav-item i{font-size:17px;flex-shrink:0}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.25)}
+
+/* Page header */
+.page-header{margin-bottom:2rem}
+.page-header h1{font-size:26px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.page-header p{color:var(--text-sec)}
+
+/* Step nav */
+.step-nav{display:flex;gap:6px;margin-bottom:.75rem}
+.step{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .3s}
+.step.done{background:var(--gold)}
+.step.active{background:var(--navy)}
+.step-labels{display:flex;margin-bottom:1.5rem}
+.step-label{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:600;color:var(--text-muted);flex:1;text-align:center;letter-spacing:.03em}
+.step-label.done{color:var(--gold-dark)}
+.step-label.active{color:var(--navy);font-weight:700}
+
+/* Cards */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.card-title{font-family:'League Spartan',sans-serif;font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-title i{font-size:16px;color:var(--navy)}
+.subtitle{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0;margin-left:4px}
+
+/* Fields */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:5px}
+.opt{font-weight:400;color:var(--text-muted);font-size:12px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field-hint{font-size:11px;color:var(--text-muted);margin-top:4px}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
+.check-group-title{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);margin:.75rem 0 .35rem}
+.check-option{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--radius-md);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s}
+.check-option:hover{border-color:var(--navy);background:var(--navy-light)}
+.check-option input{width:auto;flex-shrink:0}
+.check-option input:checked{accent-color:var(--navy)}
+.other-inline{display:grid;grid-template-columns:auto minmax(180px,1fr);gap:8px;align-items:center;margin-top:8px}
+
+/* Contract type pills */
+.contract-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.5rem}
+.contract-pill{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-md);cursor:pointer;transition:all .15s;flex:1;min-width:150px}
+.contract-pill:hover{border-color:var(--navy);background:var(--navy-light)}
+.contract-pill.selected{border-color:var(--navy);background:var(--navy-light)}
+.contract-pill input[type=radio]{display:none}
+.contract-pill-icon{width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-sec);flex-shrink:0;transition:all .15s}
+.contract-pill.selected .contract-pill-icon{background:var(--navy);color:white}
+.contract-pill-label{font-size:13px;font-weight:700;font-family:'League Spartan',sans-serif}
+.contract-pill-desc{font-size:11px;color:var(--text-muted);margin-top:1px}
+
+/* Workflow card */
+.workflow-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;color:white}
+.workflow-card h3{font-family:'League Spartan',sans-serif;font-size:14px;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.workflow-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.workflow-step:last-child{border-bottom:none;padding-bottom:0}
+.workflow-step-num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--navy);font-family:'League Spartan',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.workflow-step-text strong{display:block;font-size:13px;font-weight:700}
+.workflow-step-text span{color:rgba(255,255,255,.65);font-size:12px}
+
+/* Template cards */
+.template-card{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:.6rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px}
+.template-card:hover{border-color:var(--navy);background:var(--navy-light)}
+.template-card.selected{border-color:var(--navy);background:var(--navy-light)}
+.template-card input[type=radio]{display:none}
+.template-card-icon{width:36px;height:36px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-sec);flex-shrink:0;transition:all .15s}
+.template-card.selected .template-card-icon{background:var(--navy);color:white}
+.template-card-title{font-size:14px;font-weight:700;font-family:'League Spartan',sans-serif}
+.template-card-desc{font-size:12px;color:var(--text-muted);margin-top:1px}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none;padding-bottom:0}
+.toggle-row:first-child{padding-top:0}
+.toggle-label{font-size:14px;font-weight:500}
+.toggle-label small{display:block;font-size:12px;color:var(--text-sec);margin-top:1px;font-weight:400}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--border);border-radius:12px;cursor:pointer;transition:background .2s}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked+.slider{background:var(--navy)}
+.toggle input:checked+.slider:before{transform:translateX(18px)}
+.conditional{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.conditional.visible{display:block}
+
+/* Responsibility cards */
+.resp-card{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:.9rem 1rem;margin-bottom:.6rem;background:var(--white);transition:border-color .2s,background .2s}
+.resp-card.selected{border-color:var(--navy);background:var(--navy-light)}
+.resp-card-header{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.resp-check{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--white)}
+.resp-card.selected .resp-check{background:var(--navy);border-color:var(--navy);color:white}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;margin:2px 2px 0 0}
+.chip-navy{background:var(--navy-light);color:var(--navy)}
+.chip-gold{background:var(--gold-light);color:var(--gold-dark)}
+
+/* Custom resp */
+.custom-resp-card{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:.9rem 1rem;margin-bottom:.6rem;background:var(--white)}
+.add-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px dashed var(--border);border-radius:var(--radius-md);background:none;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:600;transition:all .15s;margin-top:4px}
+.add-btn:hover{border-color:var(--navy);color:var(--navy);background:var(--navy-light)}
+
+/* Remuneration */
+.remun-table{background:var(--bg);border-radius:var(--radius-md);overflow:hidden;margin-top:1rem}
+.remun-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;font-size:14px;border-bottom:1px solid var(--border)}
+.remun-row:last-child{border-bottom:none}
+.remun-row.total-row{background:var(--navy);color:white;font-family:'League Spartan',sans-serif;font-size:15px;font-weight:700}
+.remun-label{color:var(--text-sec)}
+.remun-row.total-row .remun-label{color:rgba(255,255,255,.8)}
+.remun-value{font-variant-numeric:tabular-nums;font-weight:600}
+.remun-row.total-row .remun-value{color:var(--gold)}
+
+/* Buttons */
+.actions{display:flex;gap:10px;margin-top:1.5rem}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--radius-md);font-size:14px;font-weight:700;font-family:'League Spartan',sans-serif;cursor:pointer;border:none;transition:all .15s;letter-spacing:.02em}
+.btn-primary{background:var(--navy);color:white;flex:1;justify-content:center}
+.btn-primary:hover{background:var(--navy-dark)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:white;color:var(--text);border:1.5px solid var(--border);flex:1;justify-content:center}
+.btn-secondary:hover{border-color:var(--navy);color:var(--navy);background:var(--navy-light)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:var(--gold-dark)}
+.btn-icon{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;color:var(--text-muted);display:flex;align-items:center}
+.btn-icon:hover{background:var(--bg);color:var(--red)}
+
+/* Pages */
+.page{display:none}
+.page.visible{display:block}
+
+/* Review */
+.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;margin-top:1rem}
+.review-item span{display:block;color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;font-family:'League Spartan',sans-serif}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:'League Spartan',sans-serif;font-weight:700;font-size:16px;color:white;flex-shrink:0}
+
+/* Doc preview cards */
+.doc-preview-card{border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.doc-preview-card:hover{border-color:var(--navy);box-shadow:var(--shadow)}
+.doc-preview-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:var(--bg);border-bottom:1.5px solid var(--border)}
+.doc-preview-title{font-family:'League Spartan',sans-serif;font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
+.doc-preview-body{padding:1.25rem;font-size:13px;line-height:1.7;max-height:200px;overflow:hidden;position:relative;pointer-events:none}
+.doc-preview-body::after{content:'';position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(transparent,white)}
+.doc-preview-expand{display:flex;align-items:center;justify-content:center;gap:6px;padding:.65rem;background:var(--navy-light);font-size:12px;font-weight:700;color:var(--navy);font-family:'League Spartan',sans-serif;letter-spacing:.04em;border-top:1.5px solid var(--border)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,23,66,.55);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:var(--radius-lg);width:100%;max-width:760px;box-shadow:var(--shadow-lg);overflow:hidden;margin:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;background:var(--navy);color:white}
+.modal-header h2{font-family:'League Spartan',sans-serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+.modal-close{background:rgba(255,255,255,.15);border:none;color:white;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
+.modal-close:hover{background:rgba(255,255,255,.25)}
+.modal-body{padding:1.5rem;overflow-y:auto;max-height:72vh}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:flex-end;gap:8px}
+
+/* Doc styles */
+.doc-header{background:var(--navy);color:white;padding:1.5rem;border-radius:var(--radius-md);margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:1rem}
+.doc-header-logo{width:48px;height:48px;flex-shrink:0;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.doc-header-logo img{width:36px;height:36px;object-fit:contain}
+.doc-header-info h2{font-family:'League Spartan',sans-serif;font-size:20px;font-weight:700;margin-bottom:2px}
+.doc-header-info p{font-size:13px;opacity:.75}
+.doc-section{margin-bottom:1.25rem}
+.doc-section-title{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:4px;margin-bottom:.75rem}
+.doc-section ul{padding-left:1.25rem;color:var(--text-sec)}
+.doc-section li{margin-bottom:4px;font-size:13px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px}
+.doc-table th{background:var(--navy);color:white;padding:8px 12px;text-align:left;font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.doc-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.doc-table tr.total td{background:var(--gold-light);font-weight:700;color:var(--navy)}
+.doc-signature{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+.sig-box{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:1rem}
+.sig-box-title{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-sec);margin-bottom:.75rem}
+.sig-line{border-bottom:1.5px solid var(--text);margin:1.5rem 0 .4rem}
+.sig-label{font-size:11px;color:var(--text-muted)}
+
+/* Info boxes */
+.info-box{background:var(--navy-light);border:1px solid #c0ccdf;border-radius:var(--radius-md);padding:.75rem 1rem;font-size:13px;color:var(--navy);display:flex;gap:8px;align-items:flex-start;margin-bottom:1rem}
+.alert-gold{background:var(--gold-light);border:1px solid #e8c46a;border-radius:var(--radius-md);padding:.75rem 1rem;font-size:13px;color:var(--gold-dark);display:flex;gap:8px;align-items:flex-start;margin-bottom:.75rem}
+.alert-green{background:var(--green-bg);border:1px solid #8ed4af;border-radius:var(--radius-md);padding:.75rem 1rem;font-size:13px;color:var(--green);display:flex;gap:8px;align-items:flex-start;margin-bottom:.75rem}
+
+/* Success */
+.success-wrap{text-align:center;padding:2.5rem 1.5rem}
+.success-icon{width:72px;height:72px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:36px;color:var(--green)}
+.doc-pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:8px 16px;border:1.5px solid var(--border);border-radius:var(--radius-md);margin:4px;cursor:pointer;color:var(--navy)}
+.doc-pill:hover{border-color:var(--navy);background:var(--navy-light)}
+
+/* Paid resp */
+.paid-resp-row{padding:12px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px}
+.paid-resp-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.paid-resp-title i{color:var(--gold-dark)}
+
+/* Admin */
+.role-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;cursor:pointer;margin:0 4px 8px 0;transition:all .15s;font-family:'League Spartan',sans-serif}
+.role-tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.admin-row{display:grid;grid-template-columns:2.5fr 1fr 60px 130px 40px;gap:8px;align-items:center;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:6px}
+.admin-col-label{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:0 4px}
+
+/* Field ref table */
+.field-ref-table{width:100%;border-collapse:collapse;font-size:13px}
+.field-ref-table th{background:var(--navy);color:white;padding:9px 14px;text-align:left;font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.field-ref-table td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+.field-ref-table tr:hover td{background:var(--bg)}
+.field-ref-table tr.group-header td{background:var(--navy-light);font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;padding:6px 14px}
+.code-tag{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-family:monospace;font-size:12px;color:var(--navy);cursor:pointer;transition:all .15s;white-space:nowrap}
+.code-tag:hover{background:var(--navy-light);border-color:var(--navy)}
+
+/* Timetable */
+.timetable-wrap{max-width:1500px}
+.tt-toolbar{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.tt-toolbar .field{margin:0;min-width:170px}
+.tt-toolbar .btn{flex:0}
+.tt-layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px;align-items:start}
+.tt-side{position:sticky;top:1rem}
+.tt-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow);margin-bottom:12px}
+.tt-panel-title{font-family:'League Spartan',sans-serif;font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tt-mini-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.75rem}
+.tt-mini-tab{padding:7px 10px;border:1.5px solid var(--border);background:white;color:var(--text-sec);font-weight:700;border-radius:7px;cursor:pointer}
+.tt-mini-tab.active{background:var(--navy);border-color:var(--navy);color:white}
+.tt-person-list{max-height:230px;overflow:auto;border-top:1px solid var(--border)}
+.tt-person{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 2px;border-bottom:1px solid var(--border)}
+.tt-person-name{font-size:13px;font-weight:700}
+.tt-person-meta{font-size:11px;color:var(--text-muted)}
+.tt-person-actions{display:flex;gap:2px}
+.tt-empty{font-size:12px;color:var(--text-muted);padding:12px 2px}
+.tt-import{display:none}
+.tt-calendar-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.tt-calendar-head{padding:1rem 1.1rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tt-calendar-title h2{font-size:19px;color:var(--navy)}
+.tt-calendar-title p{font-size:12px;color:var(--text-muted)}
+.tt-week-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tt-week-tab{padding:7px 11px;border:1.5px solid var(--border);background:white;color:var(--text-sec);font-weight:700;border-radius:7px;cursor:pointer;font-size:12px}
+.tt-week-tab.active{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.tt-grid-wrap{overflow:auto}
+.tt-grid{display:grid;grid-template-columns:78px repeat(5,minmax(150px,1fr));min-width:828px}
+.tt-grid>*{border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tt-corner,.tt-day{background:var(--navy);color:white;min-height:54px;padding:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700}
+.tt-day span{font-size:11px;color:rgba(255,255,255,.65);font-weight:500}
+.tt-time{background:var(--bg);min-height:92px;padding:10px 7px;font-weight:700;color:var(--navy);display:flex;align-items:flex-start;justify-content:center;font-variant-numeric:tabular-nums}
+.tt-cell{min-height:92px;padding:5px;background:white;cursor:pointer;transition:background .15s;position:relative}
+.tt-cell:hover{background:var(--navy-light)}
+.tt-cell.selected{box-shadow:inset 0 0 0 2px var(--gold)}
+.tt-session{border-left:4px solid var(--navy);background:var(--navy-light);padding:6px 7px;border-radius:6px;font-size:11px;line-height:1.25;margin-bottom:4px;cursor:pointer}
+.tt-session strong{display:block;color:var(--navy);font-size:12px;margin-bottom:2px}
+.tt-session span{display:block;color:var(--text-sec)}
+.tt-session.clash{border-left-color:var(--red);background:var(--red-bg)}
+.tt-session[draggable=true]{cursor:grab}
+.tt-session[draggable=true]:active{cursor:grabbing}
+.tt-cell.drag-over{background:var(--gold-light);box-shadow:inset 0 0 0 2px var(--gold)}
+.tt-carrier-tray{margin-bottom:12px;background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow)}
+.tt-carrier-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.tt-carrier-head h3{font-size:15px;color:var(--navy)}
+.tt-carrier-head p{font-size:11px;color:var(--text-muted)}
+.tt-carrier-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;min-height:62px;padding:8px;border:1.5px dashed var(--border);border-radius:8px;background:var(--bg)}
+.tt-carrier-list.drag-over{border-color:var(--gold);background:var(--gold-light)}
+.tt-carrier{background:white;border:1.5px solid var(--border);border-left:4px solid var(--gold);border-radius:7px;padding:8px;cursor:grab}
+.tt-carrier:active{cursor:grabbing}
+.tt-carrier strong{display:block;color:var(--navy);font-size:13px}
+.tt-carrier span{display:block;color:var(--text-sec);font-size:11px;margin-top:2px}
+.tt-carrier-actions{display:flex;justify-content:flex-end;gap:2px;margin-top:5px}
+.tt-drop-hint{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--text-muted);font-size:12px;min-height:44px}
+.tt-editor{margin-top:12px;background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow)}
+.tt-editor-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:10px}
+.tt-editor-grid .field{margin:0}
+.tt-student-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;max-height:145px;overflow:auto;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-md);background:var(--bg)}
+.tt-student-option{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:5px;background:white;border-radius:6px}
+.tt-student-option input{width:auto}
+.tt-alert{display:none;margin-top:10px;padding:9px 11px;border:1px solid #e4a09a;background:var(--red-bg);color:var(--red);border-radius:8px;font-size:12px;font-weight:700}
+.tt-alert.show{display:block}
+.tt-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-sec)}
+.tt-dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+.tt-dot.warning{background:var(--red)}
+@media(max-width:1050px){.tt-layout{grid-template-columns:1fr}.tt-side{position:static}.tt-editor-grid{grid-template-columns:1fr 1fr}.tt-person-list{max-height:180px}}
+@media(max-width:720px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin-left:0;padding:1rem}.nav-body{display:flex;gap:4px;overflow:auto}.nav-section,.sidebar-footer{display:none}.nav-item{min-width:max-content}.tt-editor-grid{grid-template-columns:1fr}.field-row{grid-template-columns:1fr}}
+
+/* Toast */
+.copy-toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:white;padding:10px 18px;border-radius:var(--radius-md);font-size:13px;font-weight:600;font-family:'League Spartan',sans-serif;box-shadow:var(--shadow-lg);z-index:9999;display:none;align-items:center;gap:8px}
+.copy-toast.show{display:flex}
+
+.badge{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;font-family:'League Spartan',sans-serif}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-gold{background:var(--gold-light);color:var(--gold-dark)}
+.badge-navy{background:var(--navy-light);color:var(--navy)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+</head>
+<body>
+
+<div class="copy-toast" id="copyToast"><i class="ti ti-check"></i> <span id="toastMsg">Copied!</span></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="docModal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle"><i class="ti ti-file-text"></i> Preview</h2>
+      <button class="modal-close" onclick="closeModalDirect()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModalDirect()" style="flex:0;padding:8px 20px">Close</button>
+      <button class="btn btn-gold" onclick="printModal()" style="flex:0;padding:8px 20px"><i class="ti ti-printer"></i> Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <img src="https://assets.cdn.filesafe.space/JK1DbqVvSCSHLHyAYT5L/media/67c1da5f5f0b603d80632534.png" alt="UKVS" onerror="this.style.display='none'">
+      </div>
+      <div class="sidebar-tagline">HR Onboarding System</div>
+    </div>
+    <div class="nav-body">
+      <div class="nav-section">Onboarding</div>
+      <button class="nav-item active" id="nav-form" onclick="showView('form')"><i class="ti ti-user-plus"></i> New employee</button>
+      <button class="nav-item" id="nav-timetable" onclick="showView('timetable')"><i class="ti ti-calendar-time"></i> Timetable</button>
+      <div class="nav-section">Configuration</div>
+      <button class="nav-item" id="nav-admin" onclick="showView('admin')"><i class="ti ti-settings-2"></i> Responsibilities</button>
+      <button class="nav-item" id="nav-fields" onclick="showView('fields')"><i class="ti ti-code"></i> GHL field codes</button>
+    </div>
+    <div class="sidebar-footer">UKVS · HR System v5 Draft</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- FORM VIEW -->
+    <div id="viewForm">
+      <div class="form-wrap">
+        <div class="page-header">
+          <h1>New employee onboarding</h1>
+          <p>Complete this form to generate documents and trigger the GHL signature workflow.</p>
+        </div>
+        <div class="step-nav">
+          <div class="step active" id="s1"></div><div class="step" id="s2"></div>
+          <div class="step" id="s3"></div><div class="step" id="s4"></div><div class="step" id="s5"></div>
+        </div>
+        <div class="step-labels">
+          <span class="step-label active" id="sl1">Employee</span>
+          <span class="step-label" id="sl2">Contract</span>
+          <span class="step-label" id="sl3">Role</span>
+          <span class="step-label" id="sl4">Remuneration</span>
+          <span class="step-label" id="sl5">Review</span>
+        </div>
+
+        <!-- PAGE 1: Employee -->
+        <div class="page visible" id="page1">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-user"></i> Personal details</div>
+            <div class="field-row">
+              <div class="field"><label>First name</label><input type="text" id="firstName" placeholder="e.g. Sarah"></div>
+              <div class="field"><label>Last name</label><input type="text" id="lastName" placeholder="e.g. Thompson"></div>
+            </div>
+            <div class="field"><label>Email address</label><input type="email" id="email" placeholder="e.g. sarah.thompson@ukvs.ac.uk"></div>
+            <div class="field"><label>Phone number <span class="opt">(optional)</span></label><input type="tel" id="phone" placeholder="e.g. 07700 900000"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-map-pin"></i> Home address</div>
+            <div class="field"><label>Address line 1</label><input type="text" id="addr1" placeholder="House number and street name"></div>
+            <div class="field"><label>Address line 2 <span class="opt">(optional)</span></label><input type="text" id="addr2" placeholder="Apartment, flat, unit, etc."></div>
+            <div class="field-row">
+              <div class="field"><label>City / Town</label><input type="text" id="city" placeholder="e.g. London"></div>
+              <div class="field"><label>County <span class="opt">(optional)</span></label><input type="text" id="county" placeholder="e.g. Greater London"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Postcode</label><input type="text" id="postcode" placeholder="e.g. EC1A 1BB"></div>
+              <div class="field"><label>Country</label>
+                <select id="country"><option value="United Kingdom">United Kingdom</option><option value="Other">Other</option></select>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-calendar"></i> Employment start date</div>
+            <div class="field"><label>Start date</label><input type="date" id="startDate"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="goTo(2)">Continue <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- PAGE 2: Contract -->
+        <div class="page" id="page2">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-file-certificate"></i> Contract type</div>
+            <div class="contract-pills">
+              <label class="contract-pill" onclick="selectContract('permanent')">
+                <input type="radio" name="contractType" value="permanent">
+                <div class="contract-pill-icon"><i class="ti ti-building"></i></div>
+                <div><div class="contract-pill-label">Permanent</div><div class="contract-pill-desc">Ongoing, no end date</div></div>
+              </label>
+              <label class="contract-pill" onclick="selectContract('fixed')">
+                <input type="radio" name="contractType" value="fixed">
+                <div class="contract-pill-icon"><i class="ti ti-calendar-event"></i></div>
+                <div><div class="contract-pill-label">Fixed-term contract</div><div class="contract-pill-desc">Defined start and end date</div></div>
+              </label>
+              <label class="contract-pill" onclick="selectContract('self_employed')">
+                <input type="radio" name="contractType" value="self_employed">
+                <div class="contract-pill-icon"><i class="ti ti-briefcase"></i></div>
+                <div><div class="contract-pill-label">Self-employed</div><div class="contract-pill-desc">Independent contractor</div></div>
+              </label>
+            </div>
+            <div class="field" style="margin-top:1rem">
+              <label>Employment type</label>
+              <select id="employmentType">
+                <option value="">Select...</option>
+                <option value="full_time">Full-Time</option>
+                <option value="part_time">Part-Time</option>
+              </select>
+            </div>
+            <div class="conditional" id="fixedDates">
+              <div class="field-row">
+                <div class="field"><label>Contract start date</label><input type="date" id="contractStart"></div>
+                <div class="field"><label>Contract end date</label><input type="date" id="contractEnd"></div>
+              </div>
+            </div>
+            <div class="conditional" id="selfEmployedFields">
+              <div class="field"><label>Company / trading name <span class="opt">(optional)</span></label><input type="text" id="companyName" placeholder="e.g. Thompson Consulting Ltd"></div>
+              <div class="field"><label>UTR number <span class="opt">(optional)</span></label><input type="text" id="utrNumber" placeholder="Unique taxpayer reference"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="ti ti-file-stack"></i> GHL document template <span class="subtitle">Select the contract template for this employee</span></div>
+            <label class="template-card" onclick="selectTemplate('standard_teacher')">
+              <input type="radio" name="docTemplate" value="standard_teacher">
+              <div class="template-card-icon"><i class="ti ti-school"></i></div>
+              <div style="flex:1"><div class="template-card-title">Standard teacher contract</div><div class="template-card-desc">Permanent and fixed-term teaching staff</div></div>
+              <span class="badge badge-green">Permanent / Fixed</span>
+            </label>
+            <label class="template-card" onclick="selectTemplate('dept_lead')">
+              <input type="radio" name="docTemplate" value="dept_lead">
+              <div class="template-card-icon"><i class="ti ti-award"></i></div>
+              <div style="flex:1"><div class="template-card-title">Department lead contract</div><div class="template-card-desc">Includes department leadership stipend clauses</div></div>
+              <span class="badge badge-navy">Leadership</span>
+            </label>
+            <label class="template-card" onclick="selectTemplate('tribe_lead')">
+              <input type="radio" name="docTemplate" value="tribe_lead">
+              <div class="template-card-icon"><i class="ti ti-users"></i></div>
+              <div style="flex:1"><div class="template-card-title">Tribe lead contract</div><div class="template-card-desc">Includes pastoral leadership and tribe stipend clauses</div></div>
+              <span class="badge badge-navy">Leadership</span>
+            </label>
+            <label class="template-card" onclick="selectTemplate('self_employed')">
+              <input type="radio" name="docTemplate" value="self_employed">
+              <div class="template-card-icon"><i class="ti ti-briefcase"></i></div>
+              <div style="flex:1"><div class="template-card-title">Self-employed / contractor agreement</div><div class="template-card-desc">Independent contractors and freelancers</div></div>
+              <span class="badge badge-gold">Self-employed</span>
+            </label>
+            <label class="template-card" onclick="selectTemplate('admin')">
+              <input type="radio" name="docTemplate" value="admin">
+              <div class="template-card-icon"><i class="ti ti-layout-grid"></i></div>
+              <div style="flex:1"><div class="template-card-title">Admin / support staff contract</div><div class="template-card-desc">Non-teaching administrative and support roles</div></div>
+              <span class="badge badge-navy">Admin</span>
+            </label>
+            <div class="field" style="margin-top:1rem">
+              <label>GHL template ID <span class="opt">(paste from GHL Documents &amp; Contracts â†’ Templates)</span></label>
+              <input type="text" id="ghlTemplateId" placeholder="e.g. abc123xyz">
+              <div class="field-hint">This ID tells GHL which template to populate and send for signature.</div>
+            </div>
+          </div>
+
+          <div class="workflow-card">
+            <h3><i class="ti ti-git-branch"></i> GHL signature workflow â€” how it works</h3>
+            <div class="workflow-step"><div class="workflow-step-num">1</div><div class="workflow-step-text"><strong>HR submits this form</strong><span>All field data + template ID sent to GHL via webhook</span></div></div>
+            <div class="workflow-step"><div class="workflow-step-num">2</div><div class="workflow-step-text"><strong>GHL workflow triggers</strong><span>Automation finds the template and merges all field values into the document</span></div></div>
+            <div class="workflow-step"><div class="workflow-step-num">3</div><div class="workflow-step-text"><strong>CEO receives for signature first</strong><span>Document sent to Syd â€” signed via GHL Documents &amp; Contracts</span></div></div>
+            <div class="workflow-step"><div class="workflow-step-num">4</div><div class="workflow-step-text"><strong>Employee receives automatically</strong><span>Once CEO signs, GHL routes the signed document to the employee</span></div></div>
+            <div class="workflow-step"><div class="workflow-step-num">5</div><div class="workflow-step-text"><strong>Final copies stored &amp; emailed</strong><span>Fully executed document stored on the contact record and emailed to both parties</span></div></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="goTo(1)"><i class="ti ti-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" onclick="goTo(3)">Continue <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- PAGE 3: Role -->
+        <div class="page" id="page3">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-briefcase"></i> Role &amp; department</div>
+            <div class="field">
+              <label>Primary role</label>
+                <select id="role" onchange="onRoleChange()">
+                  <option value="">Select...</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="dept_lead">Department lead</option>
+                  <option value="tribe_lead">Tribe lead</option>
+                  <option value="admin">Admin / support staff</option>
+                </select>
+            </div>
+            <div class="field">
+              <label>Departments <span class="opt">(select all that apply)</span></label>
+              <div class="check-grid">
+                <label class="check-option"><input type="checkbox" name="departments" value="english"> English</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="maths"> Maths</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="science"> Science</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="physics"> Physics</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="chemistry"> Chemistry</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="biology"> Biology</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="art"> Art</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="computer_science"> Computer Science</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="worldviews"> Worldviews</label>
+                <label class="check-option"><input type="checkbox" name="departments" value="global_citizenship"> Global Citizenship</label>
+              </div>
+              <div class="other-inline">
+                <label class="check-option" style="margin:0"><input type="checkbox" id="deptOtherCheck"> Other</label>
+                <input type="text" id="deptOther" placeholder="Other department">
+              </div>
+            </div>
+            <div class="field">
+              <label>Teaching allocation <span class="opt">(year groups teaching)</span></label>
+              <div class="check-group-title">Primary</div>
+              <div class="check-grid">
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_1"> Year 1</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_2"> Year 2</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_3"> Year 3</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_4"> Year 4</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_5"> Year 5</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_6"> Year 6</label>
+              </div>
+              <div class="check-group-title">Secondary</div>
+              <div class="check-grid">
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_7"> Year 7</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_8"> Year 8</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_9"> Year 9</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_10"> Year 10</label>
+                <label class="check-option"><input type="checkbox" name="teachingYears" value="year_11"> Year 11</label>
+              </div>
+            </div>
+          </div>
+          <div class="card" id="defaultRespSection" style="display:none">
+            <div class="card-title"><i class="ti ti-list-check"></i> Default responsibilities <span class="subtitle">Pre-loaded for this role â€” untick any that don't apply</span></div>
+            <div id="defaultRespCards"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-pencil-plus"></i> Custom responsibilities <span class="subtitle">Add anything not covered above</span></div>
+            <div id="customRespRows"></div>
+            <button class="add-btn" onclick="addCustomResp()"><i class="ti ti-plus"></i> Add responsibility</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="goTo(2)"><i class="ti ti-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" onclick="goTo(4)">Continue <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- PAGE 4: Remuneration -->
+        <div class="page" id="page4">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-currency-pound"></i> Base pay</div>
+            <div class="field-row">
+              <div class="field"><label>Pay structure</label>
+                <select id="payStructure" onchange="updatePayStructure()">
+                  <option value="hourly">Hourly rate</option>
+                  <option value="salary">Fixed annual salary</option>
+                  <option value="daily">Daily rate</option>
+                </select>
+              </div>
+              <div class="field"><label id="baseRateLabel">Hourly rate (Â£)</label>
+                <input type="number" id="baseRate" min="0" step="0.01" placeholder="e.g. 28.50" oninput="calcTotal()">
+              </div>
+            </div>
+            <div class="conditional visible" id="hoursField">
+              <div class="field-row">
+                <div class="field"><label>Teaching hours / week</label><input type="number" id="teachHours" min="0" step="0.5" placeholder="e.g. 20" oninput="calcTotal()"></div>
+                <div class="field"><label>Teaching weeks / year</label><input type="number" id="teachWeeks" min="0" step="1" value="39" oninput="calcTotal()"></div>
+              </div>
+            </div>
+            <div class="conditional" id="dailyField">
+              <div class="field"><label>Days per week</label><input type="number" id="daysPerWeek" min="1" max="5" step="0.5" placeholder="e.g. 4" oninput="calcTotal()"></div>
+            </div>
+          </div>
+          <div class="card" id="paidRespSection" style="display:none">
+            <div class="card-title"><i class="ti ti-coin"></i> Responsibility pay</div>
+            <div class="info-box"><i class="ti ti-info-circle"></i> These responsibilities are marked as paid. Enter the rate and hours for each.</div>
+            <div id="paidRespFields"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-sun"></i> Holiday pay</div>
+            <div class="field"><label>Holiday pay type</label>
+              <select id="holType" onchange="updateHolType()">
+                <option value="">Not applicable</option>
+                <option value="percentage">Percentage of earnings (%)</option>
+                <option value="days">Fixed days per year</option>
+              </select>
+            </div>
+            <div class="conditional" id="holPctField">
+              <div class="field"><label>Holiday pay rate (%)</label><input type="number" id="holPct" min="0" max="100" step="0.01" placeholder="e.g. 12.07" oninput="calcTotal()"></div>
+            </div>
+            <div class="conditional" id="holDaysField">
+              <div class="field-row">
+                <div class="field"><label>Holiday days / year</label><input type="number" id="holDays" min="0" step="0.5" placeholder="e.g. 28" oninput="calcTotal()"></div>
+                <div class="field"><label>Daily rate (Â£)</label><input type="number" id="holDayRate" min="0" step="0.01" placeholder="e.g. 114.00" oninput="calcTotal()"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-calculator"></i> Live remuneration preview</div>
+            <div id="remunerationPreview"><p style="color:var(--text-muted);font-size:13px">Fill in the fields above to see a live breakdown.</p></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="goTo(3)"><i class="ti ti-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" onclick="goTo(5)">Review &amp; generate <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- PAGE 5: Review -->
+        <div class="page" id="page5">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-id-badge"></i> Employee summary</div>
+            <div id="reviewSummary"></div>
+          </div>
+          <div class="doc-preview-card" onclick="openModal('jd')">
+            <div class="doc-preview-header">
+              <div class="doc-preview-title"><i class="ti ti-file-text"></i> Job description</div>
+              <span style="font-size:12px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:4px"><i class="ti ti-eye"></i> Click to preview</span>
+            </div>
+            <div class="doc-preview-body" id="jdSnippet"></div>
+            <div class="doc-preview-expand"><i class="ti ti-arrows-maximize"></i> OPEN FULL PREVIEW</div>
+          </div>
+          <div class="doc-preview-card" onclick="openModal('remun')">
+            <div class="doc-preview-header">
+              <div class="doc-preview-title"><i class="ti ti-receipt"></i> Remuneration breakdown</div>
+              <span style="font-size:12px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:4px"><i class="ti ti-eye"></i> Click to preview</span>
+            </div>
+            <div class="doc-preview-body" id="remunSnippet"></div>
+            <div class="doc-preview-expand"><i class="ti ti-arrows-maximize"></i> OPEN FULL PREVIEW</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-git-branch"></i> GHL workflow settings</div>
+            <div class="alert-gold"><i class="ti ti-info-circle"></i> <span>Once submitted, GHL will merge these fields into the selected contract template, send it to the CEO for signature first, then automatically route to the employee.</span></div>
+            <div class="toggle-row">
+              <div class="toggle-label">Send for digital signature via GHL<small>CEO signs first, then routed automatically to employee</small></div>
+              <label class="toggle"><input type="checkbox" id="sendSig" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">Email final signed copies to employee<small>Triggered automatically once both parties have signed</small></div>
+              <label class="toggle"><input type="checkbox" id="sendEmail" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">Store documents against GHL contact record<small>Attached automatically on completion</small></div>
+              <label class="toggle"><input type="checkbox" id="storeGHL" checked><span class="slider"></span></label>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="goTo(4)"><i class="ti ti-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" id="submitBtn" onclick="submitForm()"><i class="ti ti-rocket"></i> Submit &amp; trigger GHL workflow</button>
+          </div>
+        </div>
+
+        <!-- PAGE 6: Success -->
+        <div class="page" id="page6">
+          <div class="card">
+            <div class="success-wrap">
+              <div class="success-icon"><i class="ti ti-circle-check"></i></div>
+              <h2>Submitted successfully</h2>
+              <p id="successMsg" style="color:var(--text-sec);margin-bottom:1rem"></p>
+              <div class="alert-green" style="text-align:left"><i class="ti ti-check"></i> <span>GHL has received the payload. The automation workflow will merge the contract template, send it to the CEO for signature, then route it to the employee once signed.</span></div>
+              <div style="margin-top:1.25rem">
+                <span class="doc-pill" onclick="openModal('jd')"><i class="ti ti-file-text"></i> Job description</span>
+                <span class="doc-pill" onclick="openModal('remun')"><i class="ti ti-receipt"></i> Remuneration breakdown</span>
+              </div>
+              <div style="margin-top:1.5rem">
+                <button class="btn btn-secondary" style="display:inline-flex;flex:0;padding:10px 24px" onclick="resetForm()"><i class="ti ti-plus"></i> New employee</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMETABLE VIEW -->
+    <div id="viewTimetable" style="display:none">
+      <div class="timetable-wrap">
+        <div class="page-header">
+          <h1>Teaching timetable</h1>
+          <p>UK time · Monday to Friday · first three weeks from the first Monday</p>
+        </div>
+
+        <div class="tt-toolbar">
+          <div class="field">
+            <label>Academic year</label>
+            <select id="ttAcademicYear" onchange="ttChangePeriod()"></select>
+          </div>
+          <div class="field">
+            <label>Month</label>
+            <select id="ttMonth" onchange="ttChangePeriod()"></select>
+          </div>
+          <button class="btn btn-secondary" onclick="ttLoadExample()"><i class="ti ti-sparkles"></i> Load example</button>
+          <button class="btn btn-secondary" onclick="ttClearMonth()"><i class="ti ti-calendar-off"></i> Clear month</button>
+          <div class="tt-status" id="ttClashStatus"><span class="tt-dot"></span><span>No clashes</span></div>
+        </div>
+
+        <div class="tt-layout">
+          <aside class="tt-side">
+            <div class="tt-panel">
+              <div class="tt-panel-title"><span><i class="ti ti-users"></i> People</span><span id="ttPeopleCount">0</span></div>
+              <div class="tt-mini-tabs">
+                <button class="tt-mini-tab active" id="ttTabTeachers" onclick="ttSetPeopleTab('teacher')">Teachers</button>
+                <button class="tt-mini-tab" id="ttTabStudents" onclick="ttSetPeopleTab('student')">Students</button>
+              </div>
+              <div class="field">
+                <label>Name</label>
+                <input type="text" id="ttPersonName" placeholder="Full name">
+              </div>
+              <div class="field">
+                <label>Year level</label>
+                <select id="ttPersonYearLevel">
+                  <option value="">Not assigned</option>
+                  <option>Primary</option>
+                  <option>Secondary</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Year group</label>
+                <select id="ttPersonYearGroup">
+                  <option value="">Not assigned</option>
+                  <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option><option>Year 5</option><option>Year 6</option>
+                  <option>Year 7</option><option>Year 8</option><option>Year 9</option><option>Year 10</option><option>Year 11</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" style="width:100%" onclick="ttAddPerson()"><i class="ti ti-user-plus"></i> Add person</button>
+              <div style="display:flex;gap:6px;margin-top:8px">
+                <button class="btn btn-secondary" style="flex:1;padding:8px" onclick="document.getElementById('ttCsvInput').click()"><i class="ti ti-file-upload"></i> CSV</button>
+                <button class="btn btn-secondary" style="flex:1;padding:8px" onclick="ttDownloadCsvTemplate()"><i class="ti ti-download"></i> Template</button>
+                <input class="tt-import" type="file" id="ttCsvInput" accept=".csv,text/csv" onchange="ttImportCsv(event)">
+              </div>
+              <div class="tt-person-list" id="ttPersonList"></div>
+            </div>
+          </aside>
+
+          <section>
+            <div class="tt-carrier-tray">
+              <div class="tt-carrier-head">
+                <div><h3>Class carriers</h3><p>Drag an unscheduled class onto a timetable slot. Drag a scheduled class back here to unschedule it.</p></div>
+                <span class="badge badge-gold" id="ttCarrierCount">0 waiting</span>
+              </div>
+              <div class="tt-carrier-list" id="ttCarrierList" ondragover="ttAllowDrop(event,this)" ondragleave="ttLeaveDrop(this)" ondrop="ttDropToTray(event,this)"></div>
+            </div>
+
+            <div class="tt-calendar-card">
+              <div class="tt-calendar-head">
+                <div class="tt-calendar-title">
+                  <h2 id="ttCalendarTitle">Timetable</h2>
+                  <p id="ttCalendarRange">Select a month</p>
+                </div>
+                <div class="tt-week-tabs" id="ttWeekTabs"></div>
+              </div>
+              <div class="tt-grid-wrap">
+                <div class="tt-grid" id="ttGrid"></div>
+              </div>
+            </div>
+
+            <div class="tt-editor">
+              <div class="tt-panel-title"><span><i class="ti ti-calendar-plus"></i> Lesson</span><span id="ttEditorMode">New</span></div>
+              <input type="hidden" id="ttSessionId">
+              <div class="tt-editor-grid">
+                <div class="field">
+                  <label>Day</label>
+                  <select id="ttSessionDay">
+                    <option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Time</label>
+                  <select id="ttSessionTime"></select>
+                </div>
+                <div class="field">
+                  <label>Teacher</label>
+                  <select id="ttSessionTeacher"></select>
+                </div>
+                <div class="field">
+                  <label>Subject</label>
+                  <input type="text" id="ttSessionSubject" placeholder="e.g. Maths">
+                </div>
+                <div class="field">
+                  <label>Year level</label>
+                  <select id="ttSessionYearLevel">
+                    <option value="">Select...</option><option>Primary</option><option>Secondary</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Year group</label>
+                  <select id="ttSessionYearGroup">
+                    <option value="">Select...</option>
+                    <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option><option>Year 5</option><option>Year 6</option>
+                    <option>Year 7</option><option>Year 8</option><option>Year 9</option><option>Year 10</option><option>Year 11</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Class group</label>
+                  <select id="ttSessionClassGroup">
+                    <option value="">Select...</option>
+                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="Z">Z</option>
+                  </select>
+                </div>
+                <div class="field" style="grid-column:span 3">
+                  <label>Students</label>
+                  <div class="tt-student-picker" id="ttStudentPicker"></div>
+                </div>
+              </div>
+              <div class="tt-alert" id="ttClashAlert"></div>
+              <div class="actions" style="margin-top:12px">
+                <button class="btn btn-secondary" onclick="ttResetEditor()"><i class="ti ti-x"></i> Clear</button>
+                <button class="btn btn-secondary" id="ttDeleteSessionBtn" style="display:none;color:var(--red)" onclick="ttDeleteSession()"><i class="ti ti-trash"></i> Delete</button>
+                <button class="btn btn-secondary" onclick="ttSaveCarrier()"><i class="ti ti-box"></i> Save as carrier</button>
+                <button class="btn btn-primary" onclick="ttSaveSession()"><i class="ti ti-device-floppy"></i> Save lesson</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="viewAdmin" style="display:none">
+      <div class="admin-wrap">
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div><h1>Responsibilities config</h1><p>Define default responsibilities per role.</p></div>
+          <button class="btn btn-gold" onclick="saveAdminConfig()" style="flex:0;padding:10px 20px;margin-top:4px"><i class="ti ti-device-floppy"></i> Save config</button>
+        </div>
+        <div class="card"><div class="card-title"><i class="ti ti-adjustments"></i> Select role</div><div id="adminRoleTabs"></div></div>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div class="card-title" style="margin-bottom:0"><i class="ti ti-list-check"></i> Responsibilities â€” <span id="adminRoleLabel" style="color:var(--navy);text-transform:none;letter-spacing:0;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700">â€”</span></div>
+            <button class="add-btn" style="margin-top:0" onclick="addAdminResp()"><i class="ti ti-plus"></i> Add</button>
+          </div>
+          <div style="display:grid;grid-template-columns:2.5fr 1fr 60px 130px 40px;gap:8px;padding:0 4px 8px">
+            <span class="admin-col-label">Title / description</span><span class="admin-col-label">Category</span>
+            <span class="admin-col-label">Paid?</span><span class="admin-col-label">Default rate (Â£)</span><span></span>
+          </div>
+          <div id="adminRespRows"></div>
+          <p id="adminEmptyMsg" style="font-size:13px;color:var(--text-muted);display:none">No responsibilities yet. Click "Add".</p>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-info-circle"></i> How this works</div>
+          <ul style="font-size:13px;color:var(--text-sec);padding-left:1.25rem;line-height:2.1">
+            <li>Responsibilities added here load as pre-ticked cards on the onboarding form for the selected role.</li>
+            <li>HR can untick any that don't apply and add free-form custom ones per employee.</li>
+            <li>If "Paid?" is on, the responsibility flows to step 4 where rate and hours are set per employee.</li>
+            <li>Default rate is a suggestion â€” HR can override it per employee during onboarding.</li>
+            <li>Config saves to browser storage. Re-embed this file in GHL after changes to make them permanent.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- GHL FIELD CODES VIEW -->
+    <div id="viewFields" style="display:none">
+      <div class="admin-wrap">
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+          <div><h1>GHL field codes</h1><p>Every field this form sends to GHL. Use the merge codes in your GHL document templates.</p></div>
+          <button class="btn btn-gold" onclick="copyAllFields()" style="flex:0;padding:10px 20px"><i class="ti ti-copy"></i> Copy all codes</button>
+        </div>
+        <div class="card">
+          <div class="info-box" style="margin-bottom:0"><i class="ti ti-bulb"></i>
+            <div><strong>How to use in GHL Documents &amp; Contracts:</strong><br>In your GHL template editor, insert merge fields using the format <code style="background:var(--bg);padding:1px 6px;border-radius:4px;font-size:12px">{{field_name}}</code> exactly as shown below. GHL replaces them with employee data when the workflow triggers. Click any merge code to copy it.</div>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="field-ref-table">
+            <thead><tr><th>Field label</th><th>Webhook key</th><th>GHL merge code</th><th>Example value</th><th>Notes</th></tr></thead>
+            <tbody id="fieldRefBody"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-settings-automation"></i> Recommended GHL workflow setup</div>
+          <ol style="font-size:13px;color:var(--text-sec);padding-left:1.25rem;line-height:2.2">
+            <li>In GHL go to <strong>Settings â†’ Custom Fields</strong> and create a custom field for each webhook key listed above, using the exact key name.</li>
+            <li>Create an <strong>Inbound Webhook trigger</strong> in your GHL workflow â€” paste your webhook URL into this form's config at the top of the script.</li>
+            <li>Add a <strong>Map Fields</strong> action to write each incoming webhook value to its corresponding custom field on the contact record.</li>
+            <li>Add a <strong>Send Document</strong> action â€” select your template, set Signer 1 as Syd (CEO), Signer 2 as the contact (employee).</li>
+            <li>Add a condition: <strong>When document status = Signer 1 complete</strong> â†’ automatically send to Signer 2.</li>
+            <li>Add a final action: <strong>When document status = Fully executed</strong> â†’ send confirmation email and attach document to contact record.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/JK1DbqVvSCSHLHyAYT5L/webhook-trigger/96634d76-8896-4066-945c-c07d916659bf';
+
+const FIELD_REFS = [
+  {group:'Employee',label:'First name',key:'firstName',merge:'{{firstName}}',example:'Sarah',note:''},
+  {group:'Employee',label:'Last name',key:'lastName',merge:'{{lastName}}',example:'Thompson',note:''},
+  {group:'Employee',label:'Full name',key:'fullName',merge:'{{fullName}}',example:'Sarah Thompson',note:'Concatenated'},
+  {group:'Employee',label:'Email address',key:'email',merge:'{{email}}',example:'sarah@ukvs.ac.uk',note:'Maps to GHL contact email'},
+  {group:'Employee',label:'Phone number',key:'phone',merge:'{{phone}}',example:'07700 900000',note:''},
+  {group:'Employee',label:'Start date',key:'startDate',merge:'{{startDate}}',example:'2025-09-01',note:'ISO YYYY-MM-DD'},
+  {group:'Address',label:'Address line 1',key:'addressLine1',merge:'{{addressLine1}}',example:'42 Oak Street',note:''},
+  {group:'Address',label:'Address line 2',key:'addressLine2',merge:'{{addressLine2}}',example:'Flat 3',note:'May be empty'},
+  {group:'Address',label:'City / Town',key:'city',merge:'{{city}}',example:'London',note:''},
+  {group:'Address',label:'County',key:'county',merge:'{{county}}',example:'Greater London',note:'May be empty'},
+  {group:'Address',label:'Postcode',key:'postcode',merge:'{{postcode}}',example:'EC1A 1BB',note:''},
+  {group:'Address',label:'Country',key:'country',merge:'{{country}}',example:'United Kingdom',note:''},
+  {group:'Address',label:'Full address (block)',key:'address',merge:'{{address}}',example:'42 Oak St, London, EC1A 1BB',note:'Comma-separated block'},
+  {group:'Contract',label:'Contract type',key:'contractType',merge:'{{contractType}}',example:'permanent',note:'permanent | fixed | self_employed'},
+  {group:'Contract',label:'Contract type (label)',key:'contractTypeLabel',merge:'{{contractTypeLabel}}',example:'Permanent',note:'Human-readable'},
+  {group:'Contract',label:'Employment type',key:'employmentType',merge:'{{employmentType}}',example:'full_time',note:'full_time | part_time'},
+  {group:'Contract',label:'Employment type (label)',key:'employmentTypeLabel',merge:'{{employmentTypeLabel}}',example:'Full-Time',note:'Human-readable'},
+  {group:'Contract',label:'Contract start date',key:'contractStartDate',merge:'{{contractStartDate}}',example:'2025-09-01',note:'Fixed-term only'},
+  {group:'Contract',label:'Contract end date',key:'contractEndDate',merge:'{{contractEndDate}}',example:'2026-08-31',note:'Fixed-term only'},
+  {group:'Contract',label:'Company / trading name',key:'companyName',merge:'{{companyName}}',example:'Thompson Consulting Ltd',note:'Self-employed only'},
+  {group:'Contract',label:'UTR number',key:'utrNumber',merge:'{{utrNumber}}',example:'1234567890',note:'Self-employed only'},
+  {group:'Contract',label:'GHL template ID',key:'ghlTemplateId',merge:'{{ghlTemplateId}}',example:'abc123xyz',note:'Used by GHL to select template'},
+  {group:'Contract',label:'Document template name',key:'templateName',merge:'{{templateName}}',example:'Standard teacher contract',note:''},
+  {group:'Role',label:'Role (key)',key:'role',merge:'{{role}}',example:'teacher',note:'teacher | dept_lead | tribe_lead | admin'},
+  {group:'Role',label:'Role (label)',key:'roleLabel',merge:'{{roleLabel}}',example:'Teacher',note:'Human-readable'},
+  {group:'Role',label:'Departments',key:'departments',merge:'{{departments}}',example:'English, Maths, Physics',note:'Comma-separated selected departments'},
+  {group:'Role',label:'Department keys',key:'departmentKeys',merge:'{{departmentKeys}}',example:'english, maths, physics',note:'Machine-friendly selected department keys'},
+  {group:'Role',label:'Other department',key:'departmentOther',merge:'{{departmentOther}}',example:'Psychology',note:'Only populated when Other is selected'},
+  {group:'Role',label:'Teaching allocation',key:'teachingAllocation',merge:'{{teachingAllocation}}',example:'Year 5, Year 6, Year 7',note:'All selected year groups'},
+  {group:'Role',label:'Primary teaching allocation',key:'primaryTeachingAllocation',merge:'{{primaryTeachingAllocation}}',example:'Year 5, Year 6',note:'Year 1 to Year 6'},
+  {group:'Role',label:'Secondary teaching allocation',key:'secondaryTeachingAllocation',merge:'{{secondaryTeachingAllocation}}',example:'Year 7, Year 8',note:'Year 7 to Year 11'},
+  {group:'Remuneration',label:'Pay structure',key:'payStructure',merge:'{{payStructure}}',example:'hourly',note:'hourly | salary | daily'},
+  {group:'Remuneration',label:'Base rate (Â£)',key:'baseRate',merge:'{{baseRate}}',example:'28.50',note:''},
+  {group:'Remuneration',label:'Teaching hours / week',key:'teachingHoursPerWeek',merge:'{{teachingHoursPerWeek}}',example:'20',note:'Hourly only'},
+  {group:'Remuneration',label:'Teaching weeks / year',key:'teachingWeeksPerYear',merge:'{{teachingWeeksPerYear}}',example:'39',note:''},
+  {group:'Remuneration',label:'Days per week',key:'daysPerWeek',merge:'{{daysPerWeek}}',example:'4',note:'Daily only'},
+  {group:'Remuneration',label:'Holiday pay type',key:'holidayPayType',merge:'{{holidayPayType}}',example:'percentage',note:'percentage | days | empty'},
+  {group:'Remuneration',label:'Holiday pay %',key:'holidayPayPercentage',merge:'{{holidayPayPercentage}}',example:'12.07',note:'If percentage type'},
+  {group:'Remuneration',label:'Holiday days / year',key:'holidayDaysPerYear',merge:'{{holidayDaysPerYear}}',example:'28',note:'If days type'},
+  {group:'Remuneration',label:'Holiday day rate (Â£)',key:'holidayDayRate',merge:'{{holidayDayRate}}',example:'114.00',note:'If days type'},
+  {group:'Remuneration',label:'Estimated annual total (Â£)',key:'annualTotal',merge:'{{annualTotal}}',example:'24382.50',note:'Calculated by form'},
+  {group:'Paid Responsibilities',label:'Resp. 1 â€” title',key:'paidResp1Title',merge:'{{paidResp1Title}}',example:'Staff meetings',note:'First paid responsibility'},
+  {group:'Paid Responsibilities',label:'Resp. 1 â€” hourly rate',key:'paidResp1Rate',merge:'{{paidResp1Rate}}',example:'28.50',note:''},
+  {group:'Paid Responsibilities',label:'Resp. 1 â€” hours/week',key:'paidResp1Hours',merge:'{{paidResp1Hours}}',example:'1',note:''},
+  {group:'Paid Responsibilities',label:'Resp. 2 â€” title',key:'paidResp2Title',merge:'{{paidResp2Title}}',example:'Mandatory training',note:'Second paid responsibility'},
+  {group:'Paid Responsibilities',label:'Resp. 2 â€” hourly rate',key:'paidResp2Rate',merge:'{{paidResp2Rate}}',example:'28.50',note:''},
+  {group:'Paid Responsibilities',label:'Resp. 2 â€” hours/week',key:'paidResp2Hours',merge:'{{paidResp2Hours}}',example:'4',note:''},
+  {group:'Workflow',label:'Send for signature',key:'sendForSignature',merge:'{{sendForSignature}}',example:'true',note:'Boolean as string'},
+  {group:'Workflow',label:'Email final copies',key:'emailFinalCopy',merge:'{{emailFinalCopy}}',example:'true',note:''},
+  {group:'Workflow',label:'Store in GHL',key:'storeInGHL',merge:'{{storeInGHL}}',example:'true',note:''},
+  {group:'Documents',label:'Job description (plain text)',key:'jobDescription',merge:'{{jobDescription}}',example:'Teacher â€” Englishâ€¦',note:'HTML stripped, plain text'},
+];
+
+let responsibilitiesConfig = {
+  teacher:[
+    {id:'tc1',title:'Lesson planning & delivery',description:'Plan and deliver high-quality lessons aligned with UKVS curriculum standards',category:'Teaching',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tc2',title:'Assessment & reporting',description:'Monitor, assess and report on student progress',category:'Teaching',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'tc3',title:'Student welfare & safeguarding',description:'Maintain accurate records and contribute to student welfare and safeguarding',category:'Pastoral',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'tc4',title:'Staff meetings',description:'Attend scheduled staff meetings as part of contracted duties',category:'Administration',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tc5',title:'Mandatory training',description:'Complete all mandatory training including annual safeguarding refresher',category:'Training',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tc6',title:'Colleague collaboration',description:'Collaborate with colleagues and contribute to whole-school initiatives',category:'Teaching',hasPay:false,defaultRate:'',defaultSelected:true}
+  ],
+  dept_lead:[
+    {id:'dl1',title:'Lesson planning & delivery',description:'Plan and deliver high-quality lessons aligned with UKVS curriculum standards',category:'Teaching',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'dl2',title:'Curriculum leadership',description:'Lead curriculum planning, development and review for the department',category:'Leadership',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'dl3',title:'Staff line management',description:'Line manage, support and appraise department staff',category:'Leadership',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'dl4',title:'Departmental performance',description:'Monitor departmental performance and implement improvement strategies',category:'Leadership',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'dl5',title:'Resource & budget management',description:'Manage departmental resources, budget and schemes of work',category:'Administration',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'dl6',title:'Staff meetings',description:'Attend and where required lead scheduled staff meetings',category:'Administration',hasPay:true,defaultRate:'',defaultSelected:true}
+  ],
+  tribe_lead:[
+    {id:'tl1',title:'Lesson planning & delivery',description:'Plan and deliver high-quality lessons',category:'Teaching',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tl2',title:'Pastoral leadership',description:'Provide pastoral leadership for an assigned tribe group',category:'Pastoral',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tl3',title:'Student wellbeing monitoring',description:'Monitor wellbeing and academic progress of tribe members',category:'Pastoral',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tl4',title:'Parent & carer liaison',description:'Liaise with parents, carers and support services as required',category:'Pastoral',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'tl5',title:'Tribe assemblies',description:'Lead tribe assemblies and form-time activities',category:'Pastoral',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'tl6',title:'Staff meetings',description:'Attend scheduled staff meetings as part of contracted duties',category:'Administration',hasPay:true,defaultRate:'',defaultSelected:true}
+  ],
+  admin:[
+    {id:'ad1',title:'Administrative support',description:'Provide administrative support to academic and leadership teams',category:'Administration',hasPay:true,defaultRate:'',defaultSelected:true},
+    {id:'ad2',title:'Data & records management',description:'Maintain accurate student, staff and organisational records',category:'Administration',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'ad3',title:'Communication & correspondence',description:'Handle internal and external communications professionally',category:'Administration',hasPay:false,defaultRate:'',defaultSelected:true},
+    {id:'ad4',title:'Staff meetings',description:'Attend scheduled staff meetings as part of contracted duties',category:'Administration',hasPay:true,defaultRate:'',defaultSelected:true}
+  ]
+};
+
+const roleNames={teacher:'Teacher',dept_lead:'Department lead',tribe_lead:'Tribe lead',admin:'Admin / support staff'};
+const deptNames={english:'English',maths:'Maths',science:'Science',physics:'Physics',chemistry:'Chemistry',biology:'Biology',art:'Art',computer_science:'Computer Science',worldviews:'Worldviews',global_citizenship:'Global Citizenship',other:'Other'};
+const yearGroupNames={year_1:'Year 1',year_2:'Year 2',year_3:'Year 3',year_4:'Year 4',year_5:'Year 5',year_6:'Year 6',year_7:'Year 7',year_8:'Year 8',year_9:'Year 9',year_10:'Year 10',year_11:'Year 11'};
+const employmentTypeLabels={full_time:'Full-Time',part_time:'Part-Time'};
+const contractLabels={permanent:'Permanent',fixed:'Fixed-term contract',self_employed:'Self-employed'};
+const templateLabels={standard_teacher:'Standard teacher contract',dept_lead:'Department lead contract',tribe_lead:'Tribe lead contract',self_employed:'Self-employed / contractor agreement',admin:'Admin / support staff contract'};
+const categories=['Teaching','Leadership','Pastoral','Administration','Training','Other'];
+
+// View switching
+function showView(v){
+  ['form','timetable','admin','fields'].forEach(id=>{
+    const el=document.getElementById('view'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(el) el.style.display=v===id?'block':'none';
+    document.getElementById('nav-'+id).classList.toggle('active',v===id);
+  });
+  if(v==='timetable') ttInit();
+  if(v==='admin') renderAdminPanel();
+  if(v==='fields') renderFieldRef();
+}
+
+// Step nav
+let currentPage=1;
+function goTo(n){
+  document.getElementById('page'+currentPage).classList.remove('visible');
+  document.getElementById('page'+n).classList.add('visible');
+  currentPage=n;
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById('s'+i),sl=document.getElementById('sl'+i);
+    s.classList.remove('active','done');sl.classList.remove('active','done');
+    if(i<n){s.classList.add('done');sl.classList.add('done');}
+    else if(i===n){s.classList.add('active');sl.classList.add('active');}
+  }
+  if(n===4) renderPaidRespFields();
+  if(n===5) buildReview();
+  window.scrollTo(0,0);
+}
+
+// Contract type
+function selectContract(type){
+  document.querySelectorAll('.contract-pill').forEach(p=>p.classList.remove('selected'));
+  const pill=document.querySelector(`.contract-pill input[value="${type}"]`);
+  if(pill) pill.closest('.contract-pill').classList.add('selected');
+  toggleEl('fixedDates',type==='fixed');
+  toggleEl('selfEmployedFields',type==='self_employed');
+}
+function selectTemplate(val){
+  document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.querySelector(`.template-card input[value="${val}"]`);
+  if(card) card.closest('.template-card').classList.add('selected');
+}
+function getContractType(){const r=document.querySelector('input[name="contractType"]:checked');return r?r.value:'';}
+function getTemplateName(){const r=document.querySelector('input[name="docTemplate"]:checked');return r?r.value:'';}
+function getCheckedValues(name){return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el=>el.value);}
+function getDepartmentSelection(){
+  const values=getCheckedValues('departments');
+  const otherChecked=document.getElementById('deptOtherCheck')?.checked;
+  const otherText=(document.getElementById('deptOther')?.value||'').trim();
+  const includeOther=otherChecked||!!otherText;
+  const keys=includeOther?[...values,'other']:values;
+  const labels=values.map(v=>deptNames[v]||v);
+  if(includeOther) labels.push(otherText||'Other');
+  return {keys,labels,text:labels.join(', '),other:includeOther?otherText:''};
+}
+function getTeachingAllocation(){
+  const keys=getCheckedValues('teachingYears');
+  const primary=keys.filter(v=>/^year_[1-6]$/.test(v));
+  const secondary=keys.filter(v=>/^year_(7|8|9|10|11)$/.test(v));
+  const toLabels=arr=>arr.map(v=>yearGroupNames[v]||v);
+  return {keys,labels:toLabels(keys),text:toLabels(keys).join(', '),primaryKeys:primary,primaryText:toLabels(primary).join(', '),secondaryKeys:secondary,secondaryText:toLabels(secondary).join(', ')};
+}
+
+// Role change
+function onRoleChange(){
+  const role=document.getElementById('role').value;
+  const section=document.getElementById('defaultRespSection');
+  const container=document.getElementById('defaultRespCards');
+  if(!role||!responsibilitiesConfig[role]){section.style.display='none';return;}
+  section.style.display='';container.innerHTML='';
+  responsibilitiesConfig[role].forEach(r=>{
+    const card=document.createElement('div');
+    card.className='resp-card'+(r.defaultSelected?' selected':'');card.id='resp_'+r.id;
+    card.innerHTML=`<div class="resp-card-header" onclick="toggleResp('${r.id}')">
+      <div class="resp-check">${r.defaultSelected?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600">${r.title}</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">${r.description}</div>
+        <div style="margin-top:5px">
+          <span class="chip chip-navy">${r.category}</span>
+          ${r.hasPay?'<span class="chip chip-gold"><i class="ti ti-coin" style="font-size:10px"></i> Paid</span>':''}
+        </div>
+      </div></div>`;
+    container.appendChild(card);
+  });
+}
+function toggleResp(id){
+  const card=document.getElementById('resp_'+id);const sel=card.classList.toggle('selected');
+  card.querySelector('.resp-check').innerHTML=sel?'<i class="ti ti-check" style="font-size:12px"></i>':'';
+}
+
+// Custom responsibilities
+let custCount=0;
+function addCustomResp(title='',desc='',hasPay=false,rate='',hrs=''){
+  custCount++;const id='cust_'+custCount;
+  const el=document.createElement('div');el.id=id;el.className='custom-resp-card';
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;margin-bottom:8px">
+    <div>
+      <div class="field" style="margin-bottom:6px"><label>Title</label><input type="text" placeholder="e.g. Exam invigilation" value="${title}" oninput="calcTotal()"></div>
+      <div class="field" style="margin-bottom:0"><label>Description <span class="opt">(optional)</span></label><input type="text" placeholder="Brief description" value="${desc}"></div>
+    </div>
+    <button class="btn-icon" onclick="document.getElementById('${id}').remove();calcTotal()" style="margin-top:22px"><i class="ti ti-trash" style="font-size:17px"></i></button>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer">
+      <label class="toggle" style="width:36px;height:20px"><input type="checkbox" ${hasPay?'checked':''} onchange="toggleCustomPay('${id}',this.checked)"><span class="slider"></span></label>
+      Has pay attached
+    </label>
+    <div id="${id}_pf" style="display:${hasPay?'flex':'none'};gap:8px;align-items:flex-end;flex:1;min-width:260px">
+      <div class="field" style="margin-bottom:0;flex:1"><label>Hourly rate (Â£)</label><input type="number" placeholder="e.g. 28.50" value="${rate}" min="0" step="0.01" oninput="calcTotal()"></div>
+      <div class="field" style="margin-bottom:0;flex:1"><label>Hours / week</label><input type="number" placeholder="e.g. 2" value="${hrs}" min="0" step="0.5" oninput="calcTotal()"></div>
+    </div>
+  </div>`;
+  document.getElementById('customRespRows').appendChild(el);
+}
+function toggleCustomPay(id,show){document.getElementById(id+'_pf').style.display=show?'flex':'none';calcTotal();}
+
+// Paid resp fields
+function getSelectedDefault(){
+  const role=document.getElementById('role').value;
+  if(!role||!responsibilitiesConfig[role]) return [];
+  return responsibilitiesConfig[role].filter(r=>{const c=document.getElementById('resp_'+r.id);return c&&c.classList.contains('selected');});
+}
+function renderPaidRespFields(){
+  const paidDef=getSelectedDefault().filter(r=>r.hasPay);
+  const paidCust=[];
+  document.querySelectorAll('#customRespRows .custom-resp-card').forEach(card=>{
+    const chk=card.querySelector('input[type=checkbox]');
+    if(chk&&chk.checked){
+      const texts=card.querySelectorAll('input[type=text]');const nums=card.querySelectorAll('input[type=number]');
+      paidCust.push({id:card.id,title:texts[0]?texts[0].value||'Custom responsibility':'Custom responsibility',defaultRate:nums[0]?nums[0].value:''});
+    }
+  });
+  const all=[...paidDef.map(r=>({id:r.id,title:r.title,defaultRate:r.defaultRate})),...paidCust];
+  const container=document.getElementById('paidRespFields');const section=document.getElementById('paidRespSection');
+  if(!all.length){section.style.display='none';return;}
+  section.style.display='';
+  const existing={};
+  container.querySelectorAll('[data-rid]').forEach(row=>{existing[row.getAttribute('data-rid')]={rate:row.querySelector('.rrate').value,hrs:row.querySelector('.rhrs').value};});
+  container.innerHTML='';
+  all.forEach(r=>{
+    const prev=existing[r.id]||{};const row=document.createElement('div');
+    row.className='paid-resp-row';row.setAttribute('data-rid',r.id);
+    row.innerHTML=`<div class="paid-resp-title"><i class="ti ti-coin"></i> ${r.title}</div>
+      <div class="field-row">
+        <div class="field"><label>Hourly rate (Â£)</label><input type="number" class="rrate" min="0" step="0.01" placeholder="e.g. 28.50" value="${prev.rate||r.defaultRate||''}" oninput="calcTotal()"></div>
+        <div class="field"><label>Hours per week</label><input type="number" class="rhrs" min="0" step="0.5" placeholder="e.g. 2" value="${prev.hrs||''}" oninput="calcTotal()"></div>
+      </div>`;
+    container.appendChild(row);
+  });
+  calcTotal();
+}
+
+// Pay structure & holiday
+function updatePayStructure(){
+  const v=document.getElementById('payStructure').value;
+  document.getElementById('baseRateLabel').textContent=v==='salary'?'Annual salary (Â£)':v==='daily'?'Daily rate (Â£)':'Hourly rate (Â£)';
+  toggleEl('hoursField',v==='hourly');toggleEl('dailyField',v==='daily');calcTotal();
+}
+function updateHolType(){
+  const v=document.getElementById('holType').value;
+  toggleEl('holPctField',v==='percentage');toggleEl('holDaysField',v==='days');calcTotal();
+}
+
+// Calculator
+function fmt(n){return 'Â£'+parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function fmtN(n){return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+let lastTotal=0;
+function calcTotal(){
+  const ps=document.getElementById('payStructure').value;
+  const baseRate=parseFloat(document.getElementById('baseRate').value)||0;
+  const teachHours=parseFloat(document.getElementById('teachHours').value)||0;
+  const teachWeeks=parseFloat(document.getElementById('teachWeeks').value)||39;
+  const daysPerWk=parseFloat(document.getElementById('daysPerWeek').value)||0;
+  let rows=[],basePay=0;
+  if(ps==='hourly'&&baseRate&&teachHours){const v=baseRate*teachHours*teachWeeks;basePay+=v;rows.push({label:`Teaching (${teachHours}h/wk Ã— ${teachWeeks} wks Ã— ${fmt(baseRate)}/hr)`,value:v});}
+  else if(ps==='salary'&&baseRate){basePay=baseRate;rows.push({label:'Base salary',value:baseRate});}
+  else if(ps==='daily'&&baseRate&&daysPerWk){const v=baseRate*daysPerWk*teachWeeks;basePay+=v;rows.push({label:`Teaching (${daysPerWk}d/wk Ã— ${teachWeeks} wks Ã— ${fmt(baseRate)}/day)`,value:v});}
+  document.querySelectorAll('#paidRespFields [data-rid]').forEach(row=>{
+    const rate=parseFloat(row.querySelector('.rrate').value)||0;const hrs=parseFloat(row.querySelector('.rhrs').value)||0;
+    const titleEl=row.querySelector('.paid-resp-title');const title=titleEl?titleEl.textContent.trim():'Responsibility';
+    if(rate&&hrs){const v=rate*hrs*teachWeeks;basePay+=v;rows.push({label:`${title} (${hrs}h/wk Ã— ${teachWeeks} wks Ã— ${fmt(rate)}/hr)`,value:v});}
+  });
+  let holPay=0;const holType=document.getElementById('holType').value;
+  if(holType==='percentage'){const pct=parseFloat(document.getElementById('holPct').value)||0;if(pct){holPay=basePay*(pct/100);rows.push({label:`Holiday pay (${fmtN(pct)}%)`,value:holPay});}}
+  else if(holType==='days'){const hd=parseFloat(document.getElementById('holDays').value)||0;const hdr=parseFloat(document.getElementById('holDayRate').value)||0;if(hd&&hdr){holPay=hd*hdr;rows.push({label:`Holiday pay (${hd} days Ã— ${fmt(hdr)}/day)`,value:holPay});}}
+  const total=basePay+holPay;lastTotal=total;
+  const container=document.getElementById('remunerationPreview');
+  if(!rows.length){container.innerHTML='<p style="color:var(--text-muted);font-size:13px">Fill in the fields above to see a live breakdown.</p>';return;}
+  let html='<div class="remun-table">';
+  rows.forEach(r=>html+=`<div class="remun-row"><span class="remun-label">${r.label}</span><span class="remun-value">${fmt(r.value)}</span></div>`);
+  html+=`<div class="remun-row total-row"><span class="remun-label">Estimated annual total</span><span class="remun-value">${fmt(total)}</span></div></div>`;
+  container.innerHTML=html;
+}
+
+// Document builders
+function buildJDHTML(){
+  const role=document.getElementById('role').value,depts=getDepartmentSelection(),years=getTeachingAllocation();
+  const ct=getContractType(),fn=document.getElementById('firstName').value,ln=document.getElementById('lastName').value,sd=document.getElementById('startDate').value;
+  const employmentType=document.getElementById('employmentType').value;
+  const selDefault=getSelectedDefault();
+  const customResps=[];
+  document.querySelectorAll('#customRespRows .custom-resp-card').forEach(card=>{
+    const texts=card.querySelectorAll('input[type=text]');const t=texts[0]?texts[0].value.trim():'';const d=texts[1]?texts[1].value.trim():'';
+    if(t) customResps.push({title:t,description:d});
+  });
+  const byCategory={};
+  selDefault.forEach(r=>{if(!byCategory[r.category])byCategory[r.category]=[];byCategory[r.category].push({title:r.title,desc:r.description});});
+  let html=`<div class="doc-header"><div class="doc-header-logo"><img src="https://assets.cdn.filesafe.space/JK1DbqVvSCSHLHyAYT5L/media/67c1da5f5f0b603d80632534.png" style="width:36px;height:36px;object-fit:contain" alt="UKVS"></div>
+    <div class="doc-header-info"><h2>Job Description</h2><p>${roleNames[role]||'Role'} - ${depts.text||'Department'} | ${contractLabels[ct]||'Contract type not selected'}${employmentType?' | '+employmentTypeLabels[employmentType]:''}</p>${fn||ln?`<p style="margin-top:4px;font-weight:600">${fn} ${ln}${sd?' - Start: '+sd:''}</p>`:''}</div></div>`;
+  html+=`<div class="doc-section"><div class="doc-section-title">Teaching allocation</div><p style="font-size:13px;color:var(--text-sec);line-height:1.7"><strong>Departments:</strong> ${depts.text||'Not selected'}<br><strong>Primary:</strong> ${years.primaryText||'None selected'}<br><strong>Secondary:</strong> ${years.secondaryText||'None selected'}</p></div>`;
+  Object.keys(byCategory).forEach(cat=>{
+    html+=`<div class="doc-section"><div class="doc-section-title">${cat}</div><ul>`;
+    byCategory[cat].forEach(item=>html+=`<li><strong>${item.title}</strong>${item.desc?' â€” '+item.desc:''}</li>`);
+    html+=`</ul></div>`;
+  });
+  if(customResps.length){
+    html+=`<div class="doc-section"><div class="doc-section-title">Additional responsibilities</div><ul>`;
+    customResps.forEach(r=>html+=`<li><strong>${r.title}</strong>${r.description?' â€” '+r.description:''}</li>`);
+    html+=`</ul></div>`;
+  }
+  html+=`<div class="doc-signature"><div class="sig-box"><div class="sig-box-title">Employee signature</div><div class="sig-line"></div><div class="sig-label">${fn||'Employee'} ${ln||''} &nbsp; Date: ___________</div></div>
+    <div class="sig-box"><div class="sig-box-title">Authorised by (CEO)</div><div class="sig-line"></div><div class="sig-label">Syd &nbsp; Date: ___________</div></div></div>`;
+  return html;
+}
+function buildRemunHTML(){
+  const role=document.getElementById('role').value,depts=getDepartmentSelection(),years=getTeachingAllocation();
+  const ct=getContractType(),fn=document.getElementById('firstName').value,ln=document.getElementById('lastName').value,sd=document.getElementById('startDate').value;
+  const employmentType=document.getElementById('employmentType').value;
+  const ps=document.getElementById('payStructure').value,baseRate=parseFloat(document.getElementById('baseRate').value)||0;
+  const teachHours=parseFloat(document.getElementById('teachHours').value)||0,teachWeeks=parseFloat(document.getElementById('teachWeeks').value)||39;
+  const daysPerWk=parseFloat(document.getElementById('daysPerWeek').value)||0;
+  let rows=[],subtotal=0;
+  if(ps==='hourly'&&baseRate&&teachHours){const v=baseRate*teachHours*teachWeeks;subtotal+=v;rows.push({item:'Teaching',detail:`${teachHours}h/wk Ã— ${teachWeeks} wks Ã— ${fmt(baseRate)}/hr`,value:v});}
+  else if(ps==='salary'&&baseRate){subtotal=baseRate;rows.push({item:'Base salary',detail:'Fixed annual',value:baseRate});}
+  else if(ps==='daily'&&baseRate&&daysPerWk){const v=baseRate*daysPerWk*teachWeeks;subtotal+=v;rows.push({item:'Teaching',detail:`${daysPerWk}d/wk Ã— ${teachWeeks} wks Ã— ${fmt(baseRate)}/day`,value:v});}
+  document.querySelectorAll('#paidRespFields [data-rid]').forEach(row=>{
+    const rate=parseFloat(row.querySelector('.rrate').value)||0,hrs=parseFloat(row.querySelector('.rhrs').value)||0;
+    const titleEl=row.querySelector('.paid-resp-title');const title=titleEl?titleEl.textContent.trim():'Responsibility';
+    if(rate&&hrs){const v=rate*hrs*teachWeeks;subtotal+=v;rows.push({item:title,detail:`${hrs}h/wk Ã— ${teachWeeks} wks Ã— ${fmt(rate)}/hr`,value:v});}
+  });
+  let holPay=0;const holType=document.getElementById('holType').value;
+  if(holType==='percentage'){const pct=parseFloat(document.getElementById('holPct').value)||0;if(pct){holPay=subtotal*(pct/100);rows.push({item:'Holiday pay',detail:`${fmtN(pct)}% of earnings`,value:holPay});}}
+  else if(holType==='days'){const hd=parseFloat(document.getElementById('holDays').value)||0;const hdr=parseFloat(document.getElementById('holDayRate').value)||0;if(hd&&hdr){holPay=hd*hdr;rows.push({item:'Holiday pay',detail:`${hd} days Ã— ${fmt(hdr)}/day`,value:holPay});}}
+  const total=subtotal+holPay;
+  let html=`<div class="doc-header"><div class="doc-header-logo"><img src="https://assets.cdn.filesafe.space/JK1DbqVvSCSHLHyAYT5L/media/67c1da5f5f0b603d80632534.png" style="width:36px;height:36px;object-fit:contain" alt="UKVS"></div>
+    <div class="doc-header-info"><h2>Remuneration Breakdown</h2><p>${roleNames[role]||'Role'} - ${depts.text||'Department'} | ${contractLabels[ct]||'Contract type not selected'}${employmentType?' | '+employmentTypeLabels[employmentType]:''}</p>${fn||ln?`<p style="margin-top:4px;font-weight:600">${fn} ${ln}${sd?' - Start: '+sd:''}</p>`:''}</div></div>`;
+  html+=`<div class="doc-section"><div class="doc-section-title">Teaching allocation</div><p style="font-size:13px;color:var(--text-sec);line-height:1.7"><strong>Departments:</strong> ${depts.text||'Not selected'}<br><strong>Year groups:</strong> ${years.text||'Not selected'}</p></div>`;
+  if(rows.length){
+    html+=`<div class="doc-section"><div class="doc-section-title">Pay breakdown</div>
+      <table class="doc-table"><thead><tr><th>Element</th><th>Calculation</th><th>Annual amount</th></tr></thead><tbody>`;
+    rows.forEach(r=>html+=`<tr><td>${r.item}</td><td style="color:var(--text-sec)">${r.detail}</td><td style="font-weight:600">${fmt(r.value)}</td></tr>`);
+    html+=`<tr class="total"><td colspan="2">Total estimated annual remuneration</td><td>${fmt(total)}</td></tr></tbody></table></div>
+    <div class="doc-section"><div class="doc-section-title">Notes</div><p style="font-size:13px;color:var(--text-sec);line-height:1.7">This breakdown reflects the fixed contracted elements of your remuneration. Actual pay may vary depending on hours worked in any given period. This document should be read alongside your full contract of employment.</p></div>`;
+  }
+  html+=`<div class="doc-signature"><div class="sig-box"><div class="sig-box-title">Employee signature</div><div class="sig-line"></div><div class="sig-label">${fn||'Employee'} ${ln||''} &nbsp; Date: ___________</div></div>
+    <div class="sig-box"><div class="sig-box-title">Authorised by (CEO)</div><div class="sig-line"></div><div class="sig-label">Syd &nbsp; Date: ___________</div></div></div>`;
+  return html;
+}
+
+// Modal
+function openModal(type){
+  const body=document.getElementById('modalBody'),title=document.getElementById('modalTitle');
+  if(type==='jd'){title.innerHTML='<i class="ti ti-file-text"></i> Job description';body.innerHTML=buildJDHTML();}
+  else{title.innerHTML='<i class="ti ti-receipt"></i> Remuneration breakdown';body.innerHTML=buildRemunHTML();}
+  document.getElementById('docModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeModal(e){if(e.target===document.getElementById('docModal'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('docModal').classList.remove('open');document.body.style.overflow='';}
+function printModal(){
+  const content=document.getElementById('modalBody').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UKVS Document</title>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Nunito Sans',sans-serif;font-size:13px;color:#0d1b3e;padding:1.5cm 2cm}h1,h2,h3{font-family:'League Spartan',sans-serif}
+  .doc-header{background:#002366;color:white;padding:1.5rem;border-radius:10px;margin-bottom:1.5rem;display:flex;gap:1rem}
+  .doc-header h2{font-family:'League Spartan',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}.doc-header p{font-size:13px;opacity:.8}
+  .doc-header-logo{width:48px;height:48px;background:#f6a017;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .doc-header-logo img{width:36px;height:36px;object-fit:contain}
+  .doc-section{margin-bottom:1.25rem}.doc-section-title{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#002366;border-bottom:2px solid #f6a017;padding-bottom:4px;margin-bottom:.75rem}
+  .doc-section ul{padding-left:1.25rem;color:#5a6a8a}.doc-section li{margin-bottom:4px}
+  .doc-table{width:100%;border-collapse:collapse;font-size:13px}.doc-table th{background:#002366;color:white;padding:8px 12px;text-align:left;font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .doc-table td{padding:8px 12px;border-bottom:1px solid #dde1eb}.doc-table tr.total td{background:#fef3dc;font-weight:700;color:#002366}
+  .doc-signature{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}.sig-box{border:1.5px solid #dde1eb;border-radius:8px;padding:1rem}
+  .sig-box-title{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#5a6a8a;margin-bottom:1rem}
+  .sig-line{border-bottom:1.5px solid #0d1b3e;margin-bottom:.4rem}.sig-label{font-size:11px;color:#97a3b8}
+  </style></head><body>${content}</body></html>`);
+  w.document.close();w.focus();setTimeout(()=>w.print(),500);
+}
+
+// Review
+function buildReview(){
+  const fn=document.getElementById('firstName').value,ln=document.getElementById('lastName').value;
+  const em=document.getElementById('email').value,sd=document.getElementById('startDate').value;
+  const ct=getContractType(),role=document.getElementById('role').value,depts=getDepartmentSelection(),years=getTeachingAllocation();
+  const employmentType=document.getElementById('employmentType').value;
+  const addr1=document.getElementById('addr1').value,city=document.getElementById('city').value,postcode=document.getElementById('postcode').value;
+  const tmpl=getTemplateName();
+  document.getElementById('reviewSummary').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.25rem">
+      <div class="avatar">${(fn[0]||'?').toUpperCase()}${(ln[0]||'').toUpperCase()}</div>
+      <div><p style="font-family:'League Spartan',sans-serif;font-weight:700;font-size:16px">${fn} ${ln}</p>
+      <p style="color:var(--text-sec);font-size:13px">${em}</p>
+      ${addr1?`<p style="color:var(--text-muted);font-size:12px;margin-top:2px">${addr1}${city?', '+city:''}${postcode?' '+postcode:''}</p>`:''}</div>
+    </div>
+    <div class="review-grid">
+      <div class="review-item"><span>Role</span><strong>${roleNames[role]||'â€”'}</strong></div>
+      <div class="review-item"><span>Employment type</span><strong>${employmentTypeLabels[employmentType]||'â€”'}</strong></div>
+      <div class="review-item" style="grid-column:1/-1"><span>Departments</span><strong>${depts.text||'â€”'}</strong></div>
+      <div class="review-item" style="grid-column:1/-1"><span>Teaching allocation</span><strong>${years.text||'â€”'}</strong></div>
+      <div class="review-item"><span>Start date</span><strong>${sd||'â€”'}</strong></div>
+      <div class="review-item"><span>Contract type</span><strong>${contractLabels[ct]||'â€”'}</strong></div>
+      <div class="review-item" style="grid-column:1/-1"><span>Document template</span><strong>${templateLabels[tmpl]||'â€” not selected'}</strong></div>
+    </div>`;
+  document.getElementById('jdSnippet').innerHTML=buildJDHTML();
+  document.getElementById('remunSnippet').innerHTML=buildRemunHTML();
+}
+
+// Payload
+function collectPayload(){
+  const g=id=>{const e=document.getElementById(id);return e?e.value:''};
+  const gc=id=>{const e=document.getElementById(id);return e?e.checked:false};
+  const ct=getContractType(),tmpl=getTemplateName();
+  const depts=getDepartmentSelection(),years=getTeachingAllocation();
+  const selDef=getSelectedDefault().map(r=>({id:r.id,title:r.title,category:r.category,hasPay:r.hasPay}));
+  const cust=[];
+  document.querySelectorAll('#customRespRows .custom-resp-card').forEach(card=>{
+    const texts=card.querySelectorAll('input[type=text]');const chk=card.querySelector('input[type=checkbox]');const nums=card.querySelectorAll('input[type=number]');
+    cust.push({title:texts[0]?texts[0].value:'',description:texts[1]?texts[1].value:'',hasPay:chk?chk.checked:false,hourlyRate:nums[0]?nums[0].value:'',hoursPerWeek:nums[1]?nums[1].value:''});
+  });
+  const paidBreakdown=[];
+  document.querySelectorAll('#paidRespFields [data-rid]').forEach(row=>{
+    const titleEl=row.querySelector('.paid-resp-title');
+    paidBreakdown.push({responsibilityId:row.getAttribute('data-rid'),title:titleEl?titleEl.textContent.trim():'',hourlyRate:row.querySelector('.rrate').value,hoursPerWeek:row.querySelector('.rhrs').value});
+  });
+  const employee = {firstName:g('firstName'),lastName:g('lastName'),fullName:`${g('firstName')} ${g('lastName')}`.trim(),email:g('email'),phone:g('phone'),startDate:g('startDate'),
+    address:{line1:g('addr1'),line2:g('addr2'),city:g('city'),county:g('county'),postcode:g('postcode'),country:g('country'),full:[g('addr1'),g('addr2'),g('city'),g('county'),g('postcode'),g('country')].filter(Boolean).join(', ')}};
+  const contract = {type:ct,typeLabel:contractLabels[ct]||'',employmentType:g('employmentType'),employmentTypeLabel:employmentTypeLabels[g('employmentType')]||'',startDate:g('contractStart'),endDate:g('contractEnd'),companyName:g('companyName'),utrNumber:g('utrNumber'),ghlTemplateId:g('ghlTemplateId'),templateName:templateLabels[tmpl]||tmpl};
+  const role = {role:g('role'),roleLabel:roleNames[g('role')]||'',departmentKeys:depts.keys,departmentLabels:depts.labels,departments:depts.text,departmentOther:depts.other,teachingYearKeys:years.keys,teachingYearLabels:years.labels,teachingAllocation:years.text,primaryTeachingAllocation:years.primaryText,secondaryTeachingAllocation:years.secondaryText};
+  const responsibilities = {defaultSelected:selDef,custom:cust};
+  const remuneration = {payStructure:g('payStructure'),baseRate:g('baseRate'),teachingHoursPerWeek:g('teachHours'),teachingWeeksPerYear:g('teachWeeks'),daysPerWeek:g('daysPerWeek'),paidResponsibilities:paidBreakdown,holidayPayType:g('holType'),holidayPayPercentage:g('holPct'),holidayDaysPerYear:g('holDays'),holidayDayRate:g('holDayRate'),annualTotal:lastTotal.toFixed(2)};
+  const workflow = {sendForSignature:gc('sendSig'),emailFinalCopy:gc('sendEmail'),storeInGHL:gc('storeGHL')};
+  const documents = {jobDescription:buildJDHTML().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()};
+  const paidResp1 = paidBreakdown[0] || {};
+  const paidResp2 = paidBreakdown[1] || {};
+  return {
+    firstName:employee.firstName,
+    lastName:employee.lastName,
+    fullName:employee.fullName,
+    email:employee.email,
+    phone:employee.phone,
+    startDate:employee.startDate,
+    addressLine1:employee.address.line1,
+    addressLine2:employee.address.line2,
+    city:employee.address.city,
+    county:employee.address.county,
+    postcode:employee.address.postcode,
+    country:employee.address.country,
+    address:employee.address.full,
+    contractType:contract.type,
+    contractTypeLabel:contract.typeLabel,
+    employmentType:contract.employmentType,
+    employmentTypeLabel:contract.employmentTypeLabel,
+    contractStartDate:contract.startDate,
+    contractEndDate:contract.endDate,
+    companyName:contract.companyName,
+    utrNumber:contract.utrNumber,
+    ghlTemplateId:contract.ghlTemplateId,
+    templateName:contract.templateName,
+    role:role.role,
+    roleLabel:role.roleLabel,
+    departments:role.departments,
+    departmentKeys:role.departmentKeys.join(', '),
+    departmentOther:role.departmentOther,
+    teachingAllocation:role.teachingAllocation,
+    primaryTeachingAllocation:role.primaryTeachingAllocation,
+    secondaryTeachingAllocation:role.secondaryTeachingAllocation,
+    payStructure:remuneration.payStructure,
+    baseRate:remuneration.baseRate,
+    teachingHoursPerWeek:remuneration.teachingHoursPerWeek,
+    teachingWeeksPerYear:remuneration.teachingWeeksPerYear,
+    daysPerWeek:remuneration.daysPerWeek,
+    holidayPayType:remuneration.holidayPayType,
+    holidayPayPercentage:remuneration.holidayPayPercentage,
+    holidayDaysPerYear:remuneration.holidayDaysPerYear,
+    holidayDayRate:remuneration.holidayDayRate,
+    annualTotal:remuneration.annualTotal,
+    paidResp1Title:paidResp1.title || '',
+    paidResp1Rate:paidResp1.hourlyRate || '',
+    paidResp1Hours:paidResp1.hoursPerWeek || '',
+    paidResp2Title:paidResp2.title || '',
+    paidResp2Rate:paidResp2.hourlyRate || '',
+    paidResp2Hours:paidResp2.hoursPerWeek || '',
+    sendForSignature:workflow.sendForSignature,
+    emailFinalCopy:workflow.emailFinalCopy,
+    storeInGHL:workflow.storeInGHL,
+    jobDescription:documents.jobDescription,
+    rawPayload:{
+    employee:{firstName:g('firstName'),lastName:g('lastName'),fullName:`${g('firstName')} ${g('lastName')}`.trim(),email:g('email'),phone:g('phone'),startDate:g('startDate'),
+      address:{line1:g('addr1'),line2:g('addr2'),city:g('city'),county:g('county'),postcode:g('postcode'),country:g('country'),full:[g('addr1'),g('addr2'),g('city'),g('county'),g('postcode'),g('country')].filter(Boolean).join(', ')}},
+    contract,
+    role,
+    responsibilities:{defaultSelected:selDef,custom:cust},
+    remuneration:{payStructure:g('payStructure'),baseRate:g('baseRate'),teachingHoursPerWeek:g('teachHours'),teachingWeeksPerYear:g('teachWeeks'),daysPerWeek:g('daysPerWeek'),paidResponsibilities:paidBreakdown,holidayPayType:g('holType'),holidayPayPercentage:g('holPct'),holidayDaysPerYear:g('holDays'),holidayDayRate:g('holDayRate'),annualTotal:lastTotal.toFixed(2)},
+    workflow:{sendForSignature:gc('sendSig'),emailFinalCopy:gc('sendEmail'),storeInGHL:gc('storeGHL')},
+    documents:{jobDescription:buildJDHTML().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}
+    }
+  };
+}
+async function submitForm(){ const btn=document.getElementById('submitBtn');btn.innerHTML='<i class="ti ti-loader"></i> Sending...';btn.disabled=true; try{await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(collectPayload())});}catch(e){console.error('GHL webhook error:',e);btn.innerHTML='<i class="ti ti-alert-circle"></i> Webhook failed - check browser console';btn.disabled=false;return;}
+  const fn=document.getElementById('firstName').value,ln=document.getElementById('lastName').value;
+  document.getElementById('successMsg').textContent=`Payload for ${fn} ${ln} sent to GHL. The automation workflow will now process the contract template and route it for signatures.`;
+  document.getElementById('page5').classList.remove('visible');
+  document.getElementById('page6').classList.add('visible');currentPage=6;window.scrollTo(0,0);
+}
+
+// Timetable
+const TT_MONTHS=[
+  {month:8,label:'September'},{month:9,label:'October'},{month:10,label:'November'},{month:11,label:'December'},
+  {month:0,label:'January'},{month:1,label:'February'},{month:2,label:'March'},{month:3,label:'April'},
+  {month:4,label:'May'},{month:5,label:'June'},{month:6,label:'July'}
+];
+const TT_DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const TT_TIMES=['07:30','08:30','09:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30'];
+let ttState={people:[],sessions:[]};
+let ttPeopleTab='teacher',ttWeek=0,ttReady=false,ttDraggedId='';
+
+function ttEscape(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function ttLoad(){
+  try{
+    const saved=localStorage.getItem('ukvs_timetable_v1');
+    if(saved){const parsed=JSON.parse(saved);if(parsed&&Array.isArray(parsed.people)&&Array.isArray(parsed.sessions))ttState=parsed;}
+  }catch(e){}
+}
+function ttPersist(){try{localStorage.setItem('ukvs_timetable_v1',JSON.stringify(ttState));}catch(e){}}
+function ttInit(){
+  if(!ttReady){
+    ttLoad();
+    const now=new Date(),base=now.getMonth()>=8?now.getFullYear():now.getFullYear()-1;
+    const yearSelect=document.getElementById('ttAcademicYear');
+    [base-1,base,base+1,base+2].forEach(y=>yearSelect.add(new Option(`${y}/${String(y+1).slice(-2)}`,String(y))));
+    yearSelect.value=String(base);
+    const monthSelect=document.getElementById('ttMonth');
+    TT_MONTHS.forEach(m=>monthSelect.add(new Option(m.label,String(m.month))));
+    const currentOption=TT_MONTHS.find(m=>m.month===now.getMonth());
+    monthSelect.value=String(currentOption?currentOption.month:8);
+    const timeSelect=document.getElementById('ttSessionTime');
+    TT_TIMES.forEach(t=>timeSelect.add(new Option(t,t)));
+    ttReady=true;
+  }
+  ttRenderAll();
+}
+function ttPeriod(){
+  const startYear=parseInt(document.getElementById('ttAcademicYear').value,10);
+  const month=parseInt(document.getElementById('ttMonth').value,10);
+  const year=month>=8?startYear:startYear+1;
+  return {startYear,year,month,key:`${year}-${String(month+1).padStart(2,'0')}`};
+}
+function ttFirstMonday(year,month){
+  const d=new Date(Date.UTC(year,month,1));
+  const offset=(8-d.getUTCDay())%7;
+  d.setUTCDate(1+offset);
+  return d;
+}
+function ttAddDays(date,days){const d=new Date(date);d.setUTCDate(d.getUTCDate()+days);return d;}
+function ttDateLabel(date){return `${date.getUTCDate()} ${TT_MONTHS.find(m=>m.month===date.getUTCMonth())?.label.slice(0,3)||''}`;}
+function ttWeeks(){
+  const p=ttPeriod(),first=ttFirstMonday(p.year,p.month);
+  return [0,1,2].map(week=>Array.from({length:5},(_,day)=>ttAddDays(first,week*7+day)));
+}
+function ttChangePeriod(){ttWeek=0;ttResetEditor();ttRenderAll();}
+function ttRenderAll(){
+  ttRenderPeople();
+  ttRenderSelectors();
+  ttRenderCarriers();
+  ttRenderWeekTabs();
+  ttRenderGrid();
+  ttRenderClashStatus();
+}
+function ttRenderWeekTabs(){
+  const weeks=ttWeeks(),container=document.getElementById('ttWeekTabs');
+  container.innerHTML=weeks.map((dates,i)=>`<button class="tt-week-tab ${i===ttWeek?'active':''}" onclick="ttSelectWeek(${i})">Week ${i+1}<br><span style="font-weight:500">${ttDateLabel(dates[0])} - ${ttDateLabel(dates[4])}</span></button>`).join('');
+  const p=ttPeriod(),month=TT_MONTHS.find(m=>m.month===p.month);
+  document.getElementById('ttCalendarTitle').textContent=`${month.label} ${p.year}`;
+  document.getElementById('ttCalendarRange').textContent=`Week ${ttWeek+1}: ${ttDateLabel(weeks[ttWeek][0])} - ${ttDateLabel(weeks[ttWeek][4])} · Week 4 break`;
+}
+function ttSelectWeek(week){ttWeek=week;ttResetEditor();ttRenderWeekTabs();ttRenderGrid();}
+function ttSessionsForCell(day,time){
+  const key=ttPeriod().key;
+  return ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled!==false&&s.week===ttWeek&&s.day===day&&s.time===time);
+}
+function ttPerson(id){return ttState.people.find(p=>p.id===id);}
+function ttSessionHasClash(session){
+  return ttState.sessions.some(other=>{
+    if(other.id===session.id||other.scheduled===false||session.scheduled===false||other.monthKey!==session.monthKey||other.week!==session.week||other.day!==session.day||other.time!==session.time)return false;
+    if(other.teacherId&&other.teacherId===session.teacherId)return true;
+    return (session.studentIds||[]).some(id=>(other.studentIds||[]).includes(id));
+  });
+}
+function ttRenderGrid(){
+  const grid=document.getElementById('ttGrid'),dates=ttWeeks()[ttWeek];
+  let html='<div class="tt-corner">UK time</div>';
+  dates.forEach((date,i)=>html+=`<div class="tt-day">${TT_DAYS[i]}<span>${ttDateLabel(date)}</span></div>`);
+  TT_TIMES.forEach(time=>{
+    html+=`<div class="tt-time">${time}</div>`;
+    for(let day=0;day<5;day++){
+      const sessions=ttSessionsForCell(day,time);
+      html+=`<div class="tt-cell" data-day="${day}" data-time="${time}" onclick="ttSelectCell(${day},'${time}',this)" ondragover="ttAllowDrop(event,this)" ondragleave="ttLeaveDrop(this)" ondrop="ttDropToCell(event,${day},'${time}',this)">`;
+      sessions.forEach(s=>{
+        const teacher=ttPerson(s.teacherId),studentNames=(s.studentIds||[]).map(id=>ttPerson(id)?.name).filter(Boolean);
+        html+=`<div class="tt-session ${ttSessionHasClash(s)?'clash':''}" draggable="true" ondragstart="ttDragStart(event,'${s.id}')" onclick="ttEditSession('${s.id}',event)"><strong>${ttEscape(ttCarrierTitle(s))}</strong><span>${ttEscape(teacher?.name||'Teacher not assigned')}</span><span>${ttEscape(studentNames.join(', ')||'No students')}</span></div>`;
+      });
+      html+='</div>';
+    }
+  });
+  grid.innerHTML=html;
+}
+function ttCarrierTitle(session){
+  return `${session.yearGroup||''} ${session.subject||''}${session.classGroup?' '+session.classGroup:''}`.trim();
+}
+function ttRenderCarriers(){
+  const key=ttPeriod().key,carriers=ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled===false);
+  document.getElementById('ttCarrierCount').textContent=`${carriers.length} waiting`;
+  document.getElementById('ttCarrierList').innerHTML=carriers.length?carriers.map(s=>{
+    const teacher=ttPerson(s.teacherId),students=(s.studentIds||[]).map(id=>ttPerson(id)?.name).filter(Boolean);
+    return `<div class="tt-carrier" draggable="true" ondragstart="ttDragStart(event,'${s.id}')">
+      <strong>${ttEscape(ttCarrierTitle(s))}</strong>
+      <span>${ttEscape(teacher?.name||'Teacher not assigned')}</span>
+      <span>${ttEscape(students.join(', ')||'No students')}</span>
+      <div class="tt-carrier-actions"><button class="btn-icon" title="Edit carrier" onclick="ttEditSession('${s.id}',event)"><i class="ti ti-pencil"></i></button><button class="btn-icon" title="Delete carrier" onclick="ttDeleteCarrier('${s.id}',event)"><i class="ti ti-trash"></i></button></div>
+    </div>`;
+  }).join(''):'<div class="tt-drop-hint"><i class="ti ti-drag-drop"></i> Create a carrier or drag a lesson here</div>';
+}
+function ttDragStart(event,id){
+  ttDraggedId=id;
+  event.dataTransfer.effectAllowed='move';
+  event.dataTransfer.setData('text/plain',id);
+}
+function ttAllowDrop(event,target){event.preventDefault();event.dataTransfer.dropEffect='move';target.classList.add('drag-over');}
+function ttLeaveDrop(target){target.classList.remove('drag-over');}
+function ttDraggedSession(event){
+  const id=event.dataTransfer.getData('text/plain')||ttDraggedId;
+  return ttState.sessions.find(s=>s.id===id);
+}
+function ttDropToCell(event,day,time,target){
+  event.preventDefault();target.classList.remove('drag-over');
+  const original=ttDraggedSession(event);if(!original)return;
+  const moved={...original,monthKey:ttPeriod().key,week:ttWeek,day,time,scheduled:true};
+  const conflicts=ttConflictMessages(moved);
+  if(conflicts.length){ttShowClashes(conflicts);showToast('Move blocked by clash');return;}
+  const index=ttState.sessions.findIndex(s=>s.id===moved.id);ttState.sessions[index]=moved;
+  ttPersist();ttResetEditor();ttRenderAll();showToast('Class moved');
+}
+function ttDropToTray(event,target){
+  event.preventDefault();target.classList.remove('drag-over');
+  const original=ttDraggedSession(event);if(!original)return;
+  const index=ttState.sessions.findIndex(s=>s.id===original.id);
+  ttState.sessions[index]={...original,monthKey:ttPeriod().key,week:null,day:null,time:'',scheduled:false};
+  ttPersist();ttResetEditor();ttRenderAll();showToast('Class returned to carrier tray');
+}
+function ttDeleteCarrier(id,event){
+  event.stopPropagation();const session=ttState.sessions.find(s=>s.id===id);
+  if(!session||!confirm(`Delete ${ttCarrierTitle(session)}?`))return;
+  ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttRenderAll();ttResetEditor();
+}
+function ttSelectCell(day,time,cell){
+  ttResetEditor();
+  document.getElementById('ttSessionDay').value=String(day);
+  document.getElementById('ttSessionTime').value=time;
+  document.querySelectorAll('.tt-cell').forEach(el=>el.classList.remove('selected'));
+  cell.classList.add('selected');
+  document.getElementById('ttSessionTeacher').focus();
+}
+function ttSetPeopleTab(type){
+  ttPeopleTab=type;
+  document.getElementById('ttTabTeachers').classList.toggle('active',type==='teacher');
+  document.getElementById('ttTabStudents').classList.toggle('active',type==='student');
+  const yearLevel=document.getElementById('ttPersonYearLevel'),yearGroup=document.getElementById('ttPersonYearGroup');
+  yearLevel.disabled=type==='teacher';yearGroup.disabled=type==='teacher';
+  if(type==='teacher'){yearLevel.value='';yearGroup.value='';}
+  ttRenderPeople();
+}
+function ttAddPerson(){
+  const name=document.getElementById('ttPersonName').value.trim();
+  if(!name){showToast('Enter a name');return;}
+  ttState.people.push({id:`p_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,name,type:ttPeopleTab,yearLevel:document.getElementById('ttPersonYearLevel').value,yearGroup:document.getElementById('ttPersonYearGroup').value});
+  document.getElementById('ttPersonName').value='';
+  ttPersist();ttRenderAll();
+}
+function ttDeletePerson(id){
+  const person=ttPerson(id);if(!person||!confirm(`Remove ${person.name}?`))return;
+  ttState.people=ttState.people.filter(p=>p.id!==id);
+  ttState.sessions=ttState.sessions.filter(s=>s.teacherId!==id).map(s=>({...s,studentIds:(s.studentIds||[]).filter(studentId=>studentId!==id)}));
+  ttPersist();ttRenderAll();ttResetEditor();
+}
+function ttRenderPeople(){
+  const people=ttState.people.filter(p=>p.type===ttPeopleTab).sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('ttPeopleCount').textContent=ttState.people.length;
+  document.getElementById('ttPersonList').innerHTML=people.length?people.map(p=>`<div class="tt-person"><div><div class="tt-person-name">${ttEscape(p.name)}</div><div class="tt-person-meta">${ttEscape([p.yearLevel,p.yearGroup].filter(Boolean).join(' · ')||(p.type==='teacher'?'Teacher':'Student'))}</div></div><div class="tt-person-actions"><button class="btn-icon" title="Remove" onclick="ttDeletePerson('${p.id}')"><i class="ti ti-trash"></i></button></div></div>`).join(''):'<div class="tt-empty">No records yet.</div>';
+}
+function ttRenderSelectors(selectedStudents=[]){
+  const teachers=ttState.people.filter(p=>p.type==='teacher').sort((a,b)=>a.name.localeCompare(b.name));
+  const teacherSelect=document.getElementById('ttSessionTeacher'),current=teacherSelect.value;
+  teacherSelect.innerHTML='<option value="">Select...</option>'+teachers.map(p=>`<option value="${p.id}">${ttEscape(p.name)}</option>`).join('');
+  if(teachers.some(p=>p.id===current))teacherSelect.value=current;
+  const students=ttState.people.filter(p=>p.type==='student').sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('ttStudentPicker').innerHTML=students.length?students.map(p=>`<label class="tt-student-option"><input type="checkbox" name="ttSessionStudents" value="${p.id}" ${selectedStudents.includes(p.id)?'checked':''}> <span>${ttEscape(p.name)}${p.yearGroup?` · ${ttEscape(p.yearGroup)}`:''}</span></label>`).join(''):'<span class="tt-empty">Add students first.</span>';
+}
+function ttSelectedStudents(){return Array.from(document.querySelectorAll('input[name="ttSessionStudents"]:checked')).map(el=>el.value);}
+function ttCandidate(){
+  return {
+    id:document.getElementById('ttSessionId').value||`s_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+    monthKey:ttPeriod().key,week:ttWeek,day:parseInt(document.getElementById('ttSessionDay').value,10),
+    time:document.getElementById('ttSessionTime').value,teacherId:document.getElementById('ttSessionTeacher').value,
+    subject:document.getElementById('ttSessionSubject').value.trim(),yearLevel:document.getElementById('ttSessionYearLevel').value,
+    yearGroup:document.getElementById('ttSessionYearGroup').value,classGroup:document.getElementById('ttSessionClassGroup').value,
+    studentIds:ttSelectedStudents(),scheduled:true
+  };
+}
+function ttConflictMessages(candidate){
+  const messages=[];
+  ttState.sessions.forEach(other=>{
+    if(other.id===candidate.id||other.scheduled===false||candidate.scheduled===false||other.monthKey!==candidate.monthKey||other.week!==candidate.week||other.day!==candidate.day||other.time!==candidate.time)return;
+    if(candidate.teacherId&&other.teacherId===candidate.teacherId){
+      const teacher=ttPerson(candidate.teacherId);messages.push(`${teacher?.name||'Teacher'} already has ${other.subject} at this time.`);
+    }
+    const overlaps=candidate.studentIds.filter(id=>(other.studentIds||[]).includes(id));
+    if(overlaps.length)messages.push(`${overlaps.map(id=>ttPerson(id)?.name).filter(Boolean).join(', ')} already scheduled for ${other.subject}.`);
+  });
+  return [...new Set(messages)];
+}
+function ttSaveSession(){
+  const session=ttCandidate(),alert=document.getElementById('ttClashAlert');
+  if(!ttValidateCarrier(session,alert))return;
+  const conflicts=ttConflictMessages(session);
+  if(conflicts.length){ttShowClashes(conflicts);return;}
+  const index=ttState.sessions.findIndex(s=>s.id===session.id);
+  if(index>=0)ttState.sessions[index]=session;else ttState.sessions.push(session);
+  ttPersist();ttResetEditor();ttRenderAll();showToast('Lesson scheduled');
+}
+function ttSaveCarrier(){
+  const session=ttCandidate(),alert=document.getElementById('ttClashAlert');
+  if(!ttValidateCarrier(session,alert))return;
+  session.scheduled=false;session.week=null;session.day=null;session.time='';
+  const index=ttState.sessions.findIndex(s=>s.id===session.id);
+  if(index>=0)ttState.sessions[index]=session;else ttState.sessions.push(session);
+  ttPersist();ttResetEditor();ttRenderAll();showToast('Carrier saved');
+}
+function ttValidateCarrier(session,alert){
+  if(!session.teacherId||!session.subject||!session.yearGroup||!session.classGroup||!session.studentIds.length){
+    alert.textContent='Select a teacher, subject, year group, class group and at least one student.';alert.classList.add('show');return false;
+  }
+  return true;
+}
+function ttShowClashes(conflicts){
+  const alert=document.getElementById('ttClashAlert');
+  alert.innerHTML='<strong>Move blocked because of a clash:</strong>'+conflicts.map(m=>`<div>${ttEscape(m)}</div>`).join('');
+  alert.classList.add('show');alert.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function ttEditSession(id,event){
+  event.stopPropagation();
+  const s=ttState.sessions.find(item=>item.id===id);if(!s)return;
+  document.getElementById('ttSessionId').value=s.id;
+  if(s.scheduled!==false){document.getElementById('ttSessionDay').value=String(s.day);document.getElementById('ttSessionTime').value=s.time;}
+  document.getElementById('ttSessionSubject').value=s.subject;
+  document.getElementById('ttSessionYearLevel').value=s.yearLevel||'';
+  document.getElementById('ttSessionYearGroup').value=s.yearGroup||'';
+  document.getElementById('ttSessionClassGroup').value=s.classGroup||'';
+  ttRenderSelectors(s.studentIds||[]);
+  document.getElementById('ttSessionTeacher').value=s.teacherId;
+  document.getElementById('ttEditorMode').textContent=s.scheduled===false?'Editing carrier':'Editing lesson';
+  document.getElementById('ttDeleteSessionBtn').style.display='';
+  document.getElementById('ttClashAlert').classList.remove('show');
+}
+function ttDeleteSession(){
+  const id=document.getElementById('ttSessionId').value;if(!id||!confirm('Delete this lesson?'))return;
+  ttState.sessions=ttState.sessions.filter(s=>s.id!==id);ttPersist();ttResetEditor();ttRenderAll();
+}
+function ttResetEditor(){
+  const id=document.getElementById('ttSessionId');if(!id)return;
+  id.value='';document.getElementById('ttEditorMode').textContent='New';document.getElementById('ttDeleteSessionBtn').style.display='none';
+  document.getElementById('ttSessionSubject').value='';document.getElementById('ttSessionTeacher').value='';
+  document.getElementById('ttSessionYearLevel').value='';document.getElementById('ttSessionYearGroup').value='';document.getElementById('ttSessionClassGroup').value='';
+  document.getElementById('ttClashAlert').classList.remove('show');document.querySelectorAll('.tt-cell').forEach(el=>el.classList.remove('selected'));
+  ttRenderSelectors([]);
+}
+function ttCurrentMonthClashes(){
+  const key=ttPeriod().key;return ttState.sessions.filter(s=>s.monthKey===key&&ttSessionHasClash(s));
+}
+function ttRenderClashStatus(){
+  const clashes=ttCurrentMonthClashes(),status=document.getElementById('ttClashStatus');
+  status.innerHTML=`<span class="tt-dot ${clashes.length?'warning':''}"></span><span>${clashes.length?`${clashes.length} conflicting lesson${clashes.length===1?'':'s'}`:'No clashes'}</span>`;
+}
+function ttClearMonth(){
+  const key=ttPeriod().key;if(!confirm('Clear all lessons for this month?'))return;
+  ttState.sessions=ttState.sessions.filter(s=>s.monthKey!==key);ttPersist();ttResetEditor();ttRenderAll();
+}
+function ttLoadExample(){
+  const findOrAdd=(name,type,yearLevel='',yearGroup='')=>{
+    let person=ttState.people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.type===type);
+    if(!person){person={id:`p_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,name,type,yearLevel,yearGroup};ttState.people.push(person);}
+    return person;
+  };
+  const teacher=findOrAdd('Andromachi','teacher');
+  const students=['Avery','Randy','Levi'].map(name=>findOrAdd(name,'student','Primary','Year 5'));
+  const key=ttPeriod().key;
+  if(!ttState.sessions.some(s=>s.monthKey===key&&s.week===0&&s.day===0&&s.time==='07:30')){
+    ttState.sessions.push({id:`s_${Date.now()}`,monthKey:key,week:0,day:0,time:'07:30',teacherId:teacher.id,subject:'Maths',yearLevel:'Primary',yearGroup:'Year 5',classGroup:'A',studentIds:students.map(s=>s.id),scheduled:true});
+  }
+  ttPersist();ttRenderAll();showToast('Example loaded');
+}
+function ttParseCsvLine(line){
+  const values=[];let value='',quoted=false;
+  for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++;}else quoted=!quoted;}else if(ch===','&&!quoted){values.push(value.trim());value='';}else value+=ch;}
+  values.push(value.trim());return values;
+}
+function ttImportCsv(event){
+  const file=event.target.files?.[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const lines=String(reader.result).replace(/\r/g,'').split('\n').filter(Boolean);
+    if(lines.length<2){showToast('CSV has no records');return;}
+    const headers=ttParseCsvLine(lines[0]).map(h=>h.toLowerCase().replace(/[\s_-]/g,''));
+    let added=0;
+    lines.slice(1).forEach(line=>{
+      const row=ttParseCsvLine(line),get=name=>row[headers.indexOf(name)]||'';
+      const name=get('name').trim(),type=get('type').trim().toLowerCase();
+      if(!name||!['teacher','student'].includes(type))return;
+      if(ttState.people.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.type===type))return;
+      ttState.people.push({id:`p_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,name,type,yearLevel:get('yearlevel').trim(),yearGroup:get('yeargroup').trim()});added++;
+    });
+    ttPersist();ttRenderAll();showToast(`${added} people imported`);event.target.value='';
+  };
+  reader.readAsText(file);
+}
+function ttDownloadCsvTemplate(){
+  const csv='type,name,yearLevel,yearGroup\r\nteacher,Andromachi,,\r\nstudent,Avery,Primary,Year 5\r\n';
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'})),a=document.createElement('a');
+  a.href=url;a.download='ukvs-timetable-people-template.csv';a.click();URL.revokeObjectURL(url);
+}
+
+// Admin panel
+let adminRole='teacher';
+function renderAdminPanel(){
+  const tabs=document.getElementById('adminRoleTabs');tabs.innerHTML='';
+  Object.keys(roleNames).forEach(r=>{
+    const btn=document.createElement('button');btn.className='role-tab'+(r===adminRole?' active':'');btn.textContent=roleNames[r];
+    btn.onclick=()=>{adminRole=r;renderAdminPanel();};tabs.appendChild(btn);
+  });
+  document.getElementById('adminRoleLabel').textContent=roleNames[adminRole];renderAdminRows();
+}
+function renderAdminRows(){
+  const container=document.getElementById('adminRespRows'),empty=document.getElementById('adminEmptyMsg');
+  const resps=responsibilitiesConfig[adminRole]||[];container.innerHTML='';
+  if(!resps.length){empty.style.display='block';return;}empty.style.display='none';
+  resps.forEach((r,idx)=>{
+    const row=document.createElement('div');row.className='admin-row';
+    row.innerHTML=`<div>
+      <input type="text" placeholder="Title" value="${r.title}" oninput="updateAdminResp(${idx},'title',this.value)" style="margin-bottom:5px">
+      <input type="text" placeholder="Description" value="${r.description}" oninput="updateAdminResp(${idx},'description',this.value)">
+    </div>
+    <select onchange="updateAdminResp(${idx},'category',this.value)">${categories.map(c=>`<option ${c===r.category?'selected':''}>${c}</option>`).join('')}</select>
+    <div style="display:flex;justify-content:center"><label class="toggle" style="width:36px;height:20px"><input type="checkbox" ${r.hasPay?'checked':''} onchange="updateAdminResp(${idx},'hasPay',this.checked)"><span class="slider"></span></label></div>
+    <input type="number" placeholder="e.g. 28.50" value="${r.defaultRate}" min="0" step="0.01" oninput="updateAdminResp(${idx},'defaultRate',this.value)">
+    <button class="btn-icon" onclick="deleteAdminResp(${idx})"><i class="ti ti-trash" style="font-size:16px"></i></button>`;
+    container.appendChild(row);
+  });
+}
+function updateAdminResp(idx,field,value){responsibilitiesConfig[adminRole][idx][field]=value;}
+function deleteAdminResp(idx){responsibilitiesConfig[adminRole].splice(idx,1);renderAdminRows();}
+function addAdminResp(){
+  responsibilitiesConfig[adminRole].push({id:adminRole.substring(0,2)+Date.now(),title:'',description:'',category:'Teaching',hasPay:false,defaultRate:'',defaultSelected:true});
+  renderAdminRows();const rows=document.querySelectorAll('#adminRespRows .admin-row');if(rows.length)rows[rows.length-1].querySelector('input').focus();
+}
+function saveAdminConfig(){
+  try{localStorage.setItem('ukvs_resp_v4',JSON.stringify(responsibilitiesConfig));}catch(e){}
+  const btn=document.querySelector('#viewAdmin .btn-gold');if(!btn)return;
+  const orig=btn.innerHTML;btn.innerHTML='<i class="ti ti-check"></i> Saved!';setTimeout(()=>{btn.innerHTML=orig;},2000);
+}
+(function loadConfig(){try{const s=localStorage.getItem('ukvs_resp_v4');if(s)responsibilitiesConfig=JSON.parse(s);}catch(e){}}());
+
+// Field ref
+function renderFieldRef(){
+  const tbody=document.getElementById('fieldRefBody');tbody.innerHTML='';
+  let lastGroup='';
+  FIELD_REFS.forEach(f=>{
+    if(f.group!==lastGroup){const gr=document.createElement('tr');gr.className='group-header';gr.innerHTML=`<td colspan="5">${f.group}</td>`;tbody.appendChild(gr);lastGroup=f.group;}
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:600">${f.label}</td>
+      <td><code style="font-size:12px;color:var(--navy);background:var(--bg);padding:2px 6px;border-radius:4px">${f.key}</code></td>
+      <td><span class="code-tag" onclick="copyCode('${f.merge}')">${f.merge} <i class="ti ti-copy" style="font-size:11px;color:var(--text-muted)"></i></span></td>
+      <td style="color:var(--text-sec)">${f.example}</td>
+      <td style="color:var(--text-muted);font-size:12px">${f.note}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function copyCode(text){
+  navigator.clipboard.writeText(text).catch(()=>{const el=document.createElement('textarea');el.value=text;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);});
+  showToast('Copied: '+text);
+}
+function copyAllFields(){const all=FIELD_REFS.map(f=>f.merge).join('\n');copyCode(all);showToast('All '+FIELD_REFS.length+' merge codes copied!');}
+function showToast(msg){const t=document.getElementById('copyToast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// Helpers
+function toggleEl(id,show){const el=document.getElementById(id);if(el){if(show)el.classList.add('visible');else el.classList.remove('visible');}}
+function resetForm(){
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],textarea').forEach(el=>el.value='');
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+  document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
+  document.getElementById('sendSig').checked=true;document.getElementById('sendEmail').checked=true;document.getElementById('storeGHL').checked=true;
+  document.querySelectorAll('.contract-pill,.template-card').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('defaultRespSection').style.display='none';
+  document.getElementById('defaultRespCards').innerHTML='';
+  document.getElementById('customRespRows').innerHTML='';
+  document.getElementById('paidRespSection').style.display='none';
+  document.getElementById('paidRespFields').innerHTML='';
+  ['fixedDates','selfEmployedFields','holPctField','holDaysField','dailyField'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById('hoursField').classList.add('visible');
+  document.getElementById('remunerationPreview').innerHTML='<p style="color:var(--text-muted);font-size:13px">Fill in the fields above to see a live breakdown.</p>';
+  const sb=document.getElementById('submitBtn');sb.innerHTML='<i class="ti ti-rocket"></i> Submit & trigger GHL workflow';sb.disabled=false;
+  custCount=0;lastTotal=0;
+  document.getElementById('page6').classList.remove('visible');
+  goTo(1);
+}
+</script>
+</body>
+</html>
+
