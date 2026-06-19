@@ -56,6 +56,15 @@ Open `index.html` directly in a browser while connected to the internet. Sign in
 
 When one signed-in user changes the timetable, other signed-in users receive the database update through Supabase Realtime.
 
+Timetable viewing tools include:
+
+- searchable teacher and student views;
+- year group, subject, and class-group filters;
+- clash-only display;
+- stable colours by subject, teacher, or year group;
+- monthly workload totals;
+- printable PDF views for a week, month, or complete academic year.
+
 ## Deployment
 
 This static application can be deployed using GitHub Pages, Vercel, Netlify, or another static hosting provider.
