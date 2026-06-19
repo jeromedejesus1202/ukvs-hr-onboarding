@@ -252,6 +252,16 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .tt-toolbar{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
 .tt-toolbar .field{margin:0;min-width:170px}
 .tt-toolbar .btn{flex:0}
+.tt-filterbar{display:grid;grid-template-columns:140px minmax(190px,1.4fr) repeat(4,minmax(130px,1fr)) auto;gap:8px;align-items:end;margin-bottom:12px;padding:10px;background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+.tt-filterbar .field{margin:0;min-width:0}
+.tt-filter-check{display:flex;align-items:center;gap:7px;height:40px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--radius-md);font-size:12px;font-weight:700;color:var(--text-sec);white-space:nowrap}
+.tt-filter-check input{width:auto}
+.tt-filter-actions{display:flex;gap:6px;align-items:end}
+.tt-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tt-summary-item{background:white;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px}
+.tt-summary-item span{display:block;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
+.tt-summary-item strong{display:block;font-size:18px;color:var(--navy);margin-top:2px}
+.tt-filter-empty{padding:1rem;text-align:center;color:var(--text-muted);font-size:12px}
 .tt-layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px;align-items:start}
 .tt-side{position:sticky;top:1rem}
 .tt-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow);margin-bottom:12px}
@@ -323,7 +333,8 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .cloud-status i{color:#54d391}
 .cloud-user{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .cloud-logout{background:none;border:0;color:rgba(255,255,255,.65);cursor:pointer;padding:2px}
-@media(max-width:1050px){.tt-layout{grid-template-columns:1fr}.tt-side{position:static}.tt-editor-grid{grid-template-columns:1fr 1fr}.tt-person-list{max-height:180px}}
+@media(max-width:1250px){.tt-filterbar{grid-template-columns:repeat(3,minmax(150px,1fr))}.tt-filter-actions{grid-column:span 2}}
+@media(max-width:1050px){.tt-layout{grid-template-columns:1fr}.tt-side{position:static}.tt-editor-grid{grid-template-columns:1fr 1fr}.tt-person-list{max-height:180px}.tt-summary{grid-template-columns:1fr 1fr}}
 @media(max-width:720px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin-left:0;padding:1rem}.nav-body{display:flex;gap:4px;overflow:auto}.nav-section,.sidebar-footer{display:none}.nav-item{min-width:max-content}.tt-editor-grid{grid-template-columns:1fr}.field-row{grid-template-columns:1fr}}
 
 /* Toast */
@@ -752,6 +763,60 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <button class="btn btn-secondary" onclick="ttLoadExample()"><i class="ti ti-sparkles"></i> Load example</button>
           <button class="btn btn-secondary" onclick="ttClearMonth()"><i class="ti ti-calendar-off"></i> Clear month</button>
           <div class="tt-status" id="ttClashStatus"><span class="tt-dot"></span><span>No clashes</span></div>
+        </div>
+
+        <div class="tt-filterbar">
+          <div class="field">
+            <label>View</label>
+            <select id="ttFilterView" onchange="ttViewChanged()">
+              <option value="all">All classes</option>
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Teacher / student</label>
+            <input id="ttFilterPerson" list="ttFilterPeople" placeholder="Search name" oninput="ttFilterChanged()">
+            <datalist id="ttFilterPeople"></datalist>
+          </div>
+          <div class="field">
+            <label>Year group</label>
+            <select id="ttFilterYearGroup" onchange="ttFilterChanged()"><option value="">All</option></select>
+          </div>
+          <div class="field">
+            <label>Subject</label>
+            <select id="ttFilterSubject" onchange="ttFilterChanged()"><option value="">All</option></select>
+          </div>
+          <div class="field">
+            <label>Class group</label>
+            <select id="ttFilterClassGroup" onchange="ttFilterChanged()">
+              <option value="">All</option><option>A</option><option>B</option><option>C</option><option>Z</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Colour by</label>
+            <select id="ttColourMode" onchange="ttFilterChanged()">
+              <option value="subject">Subject</option>
+              <option value="teacher">Teacher</option>
+              <option value="year">Year group</option>
+            </select>
+          </div>
+          <label class="tt-filter-check"><input type="checkbox" id="ttFilterClashes" onchange="ttFilterChanged()"> Clashes only</label>
+          <div class="tt-filter-actions">
+            <div class="field">
+              <label>PDF range</label>
+              <select id="ttPdfScope"><option value="week">Current week</option><option value="month">Current month</option><option value="year">Academic year</option></select>
+            </div>
+            <button class="btn btn-secondary" onclick="ttResetFilters()" title="Clear timetable filters"><i class="ti ti-filter-off"></i></button>
+            <button class="btn btn-gold" onclick="ttDownloadPdf()"><i class="ti ti-file-type-pdf"></i> Download PDF</button>
+          </div>
+        </div>
+
+        <div class="tt-summary" id="ttSummary">
+          <div class="tt-summary-item"><span>Visible lessons</span><strong id="ttSummaryLessons">0</strong></div>
+          <div class="tt-summary-item"><span>Teaching hours</span><strong id="ttSummaryHours">0</strong></div>
+          <div class="tt-summary-item"><span>Teachers</span><strong id="ttSummaryTeachers">0</strong></div>
+          <div class="tt-summary-item"><span>Students</span><strong id="ttSummaryStudents">0</strong></div>
         </div>
 
         <div class="tt-layout">
@@ -1556,14 +1621,20 @@ function ttWeeks(){
   const p=ttPeriod(),first=ttFirstMonday(p.year,p.month);
   return [0,1,2].map(week=>Array.from({length:5},(_,day)=>ttAddDays(first,week*7+day)));
 }
+function ttWeeksFor(year,month){
+  const first=ttFirstMonday(year,month);
+  return [0,1,2].map(week=>Array.from({length:5},(_,day)=>ttAddDays(first,week*7+day)));
+}
 function ttChangePeriod(){ttWeek=0;ttResetEditor();ttRenderAll();}
 function ttRenderAll(){
   ttRenderPeople();
   ttRenderSelectors();
+  ttRenderFilterOptions();
   ttRenderCarriers();
   ttRenderWeekTabs();
   ttRenderGrid();
   ttRenderClashStatus();
+  ttRenderSummary();
 }
 function ttRenderWeekTabs(){
   const weeks=ttWeeks(),container=document.getElementById('ttWeekTabs');
@@ -1575,9 +1646,134 @@ function ttRenderWeekTabs(){
 function ttSelectWeek(week){ttWeek=week;ttResetEditor();ttRenderWeekTabs();ttRenderGrid();}
 function ttSessionsForCell(day,time){
   const key=ttPeriod().key;
-  return ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled!==false&&s.week===ttWeek&&s.day===day&&s.time===time);
+  return ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled!==false&&s.week===ttWeek&&s.day===day&&s.time===time&&ttSessionMatchesFilters(s));
 }
 function ttPerson(id){return ttState.people.find(p=>p.id===id);}
+function ttFilterPersonId(){
+  const input=document.getElementById('ttFilterPerson'),list=document.getElementById('ttFilterPeople');
+  const option=Array.from(list.options).find(item=>item.value===input.value);
+  return option?.dataset.id||'';
+}
+function ttSessionMatchesFilters(session){
+  const view=document.getElementById('ttFilterView')?.value||'all';
+  const personId=ttFilterPersonId();
+  const year=document.getElementById('ttFilterYearGroup')?.value||'';
+  const subject=document.getElementById('ttFilterSubject')?.value||'';
+  const classGroup=document.getElementById('ttFilterClassGroup')?.value||'';
+  const clashesOnly=document.getElementById('ttFilterClashes')?.checked||false;
+  if(view==='teacher'&&(!personId||session.teacherId!==personId))return false;
+  if(view==='student'&&(!personId||!(session.studentIds||[]).includes(personId)))return false;
+  if(year&&session.yearGroup!==year)return false;
+  if(subject&&session.subject!==subject)return false;
+  if(classGroup&&session.classGroup!==classGroup)return false;
+  if(clashesOnly&&!ttSessionHasClash(session))return false;
+  return true;
+}
+function ttRenderFilterOptions(){
+  const view=document.getElementById('ttFilterView').value;
+  const personInput=document.getElementById('ttFilterPerson'),previousPerson=personInput.value;
+  const people=ttState.people.filter(person=>view==='all'||person.type===view).sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('ttFilterPeople').innerHTML=people.map(person=>`<option value="${ttEscape(person.name)} - ${person.type==='teacher'?'Teacher':'Student'}" data-id="${person.id}"></option>`).join('');
+  const sessions=ttState.sessions;
+  const updateSelect=(id,values)=>{
+    const select=document.getElementById(id),current=select.value;
+    select.innerHTML='<option value="">All</option>'+values.map(value=>`<option value="${ttEscape(value)}">${ttEscape(value)}</option>`).join('');
+    if(values.includes(current))select.value=current;
+  };
+  updateSelect('ttFilterYearGroup',[...new Set(sessions.map(s=>s.yearGroup).filter(Boolean))].sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,''))));
+  updateSelect('ttFilterSubject',[...new Set(sessions.map(s=>s.subject).filter(Boolean))].sort());
+  personInput.disabled=view==='all';
+  if(view==='all')personInput.value='';
+}
+function ttFilterChanged(){ttRenderFilterOptions();ttRenderCarriers();ttRenderGrid();ttRenderSummary();}
+function ttViewChanged(){document.getElementById('ttFilterPerson').value='';ttFilterChanged();}
+function ttResetFilters(){
+  document.getElementById('ttFilterView').value='all';
+  document.getElementById('ttFilterPerson').value='';
+  document.getElementById('ttFilterYearGroup').value='';
+  document.getElementById('ttFilterSubject').value='';
+  document.getElementById('ttFilterClassGroup').value='';
+  document.getElementById('ttFilterClashes').checked=false;
+  document.getElementById('ttColourMode').value='subject';
+  ttFilterChanged();
+}
+function ttColourFor(session){
+  const mode=document.getElementById('ttColourMode')?.value||'subject';
+  const key=mode==='teacher'?session.teacherId:mode==='year'?session.yearGroup:session.subject;
+  const palette=['#0a5c9e','#198754','#a24898','#c07800','#b53b3b','#3b6f58','#6a54a3','#007f82','#9a4d13','#4361a5'];
+  let hash=0;for(const char of String(key||''))hash=((hash<<5)-hash)+char.charCodeAt(0);
+  return palette[Math.abs(hash)%palette.length];
+}
+function ttRenderSummary(){
+  const key=ttPeriod().key;
+  const sessions=ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled!==false&&ttSessionMatchesFilters(s));
+  const teachers=new Set(sessions.map(s=>s.teacherId).filter(Boolean));
+  const students=new Set(sessions.flatMap(s=>s.studentIds||[]));
+  document.getElementById('ttSummaryLessons').textContent=sessions.length;
+  document.getElementById('ttSummaryHours').textContent=sessions.length;
+  document.getElementById('ttSummaryTeachers').textContent=teachers.size;
+  document.getElementById('ttSummaryStudents').textContent=students.size;
+}
+function ttFilterDescription(){
+  const view=document.getElementById('ttFilterView').value;
+  const person=document.getElementById('ttFilterPerson').value;
+  const parts=[];
+  if(view!=='all')parts.push(person||`${view} not selected`);
+  const fields=[['ttFilterYearGroup','Year'],['ttFilterSubject','Subject'],['ttFilterClassGroup','Group']];
+  fields.forEach(([id,label])=>{const value=document.getElementById(id).value;if(value)parts.push(`${label}: ${value}`);});
+  if(document.getElementById('ttFilterClashes').checked)parts.push('Clashes only');
+  return parts.join(' · ')||'All classes';
+}
+function ttAcademicMonth(startYear,month){
+  const year=month>=8?startYear:startYear+1;
+  return {year,month,key:`${year}-${String(month+1).padStart(2,'0')}`,label:`${TT_MONTHS.find(item=>item.month===month).label} ${year}`};
+}
+function ttPdfWeekTable(period,weekIndex,forceBlank=false){
+  const dates=ttWeeksFor(period.year,period.month)[weekIndex];
+  const sessions=ttState.sessions.filter(s=>s.monthKey===period.key&&s.scheduled!==false&&s.week===weekIndex&&ttSessionMatchesFilters(s));
+  if(!sessions.length&&!forceBlank)return '';
+  let html=`<section class="pdf-week"><h3>Week ${weekIndex+1}: ${ttDateLabel(dates[0])} - ${ttDateLabel(dates[4])}</h3><table><thead><tr><th class="pdf-time">Time</th>${TT_DAYS.map((day,index)=>`<th>${day}<small>${ttDateLabel(dates[index])}</small></th>`).join('')}</tr></thead><tbody>`;
+  TT_TIMES.forEach(time=>{
+    html+=`<tr><th class="pdf-time">${time}</th>`;
+    for(let day=0;day<5;day++){
+      const cell=sessions.filter(s=>s.day===day&&s.time===time);
+      html+=`<td>${cell.map(s=>{
+        const teacher=ttPerson(s.teacherId),students=(s.studentIds||[]).map(id=>ttPerson(id)?.name).filter(Boolean);
+        return `<div class="pdf-lesson"><strong>${ttEscape(ttCarrierTitle(s))}</strong><span>${ttEscape(teacher?.name||'Teacher not assigned')}</span><small>${ttEscape(students.join(', ')||'No students')}</small></div>`;
+      }).join('')}</td>`;
+    }
+    html+='</tr>';
+  });
+  return html+'</tbody></table></section>';
+}
+function ttDownloadPdf(){
+  const scope=document.getElementById('ttPdfScope').value,p=ttPeriod();
+  const periods=scope==='year'?TT_MONTHS.map(item=>ttAcademicMonth(p.startYear,item.month)):[{year:p.year,month:p.month,key:p.key,label:`${TT_MONTHS.find(item=>item.month===p.month).label} ${p.year}`}];
+  let content='';
+  periods.forEach(period=>{
+    const weeks=scope==='week'?[ttWeek]:[0,1,2];
+    const weekHtml=weeks.map(index=>ttPdfWeekTable(period,index,scope!=='year')).join('');
+    if(weekHtml)content+=`<div class="pdf-month"><h2>${ttEscape(period.label)}</h2>${weekHtml}</div>`;
+  });
+  if(!content)content='<div class="pdf-empty">No lessons match the selected filters.</div>';
+  const filter=ttFilterDescription(),academicYear=`${p.startYear}/${String(p.startYear+1).slice(-2)}`;
+  const popup=window.open('','_blank');
+  if(!popup){showToast('Allow pop-ups to create the PDF');return;}
+  popup.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UKVS Timetable - ${ttEscape(filter)}</title>
+  <style>
+  @page{size:A4 landscape;margin:9mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#102044;margin:0}
+  header{border-bottom:3px solid #f6a017;padding-bottom:8px;margin-bottom:12px;display:flex;justify-content:space-between;gap:20px}
+  h1{font-size:20px;margin:0;color:#002366}header p{margin:3px 0 0;font-size:11px;color:#5a6a8a}
+  .pdf-month{break-after:page}.pdf-month:last-child{break-after:auto}.pdf-month>h2{font-size:17px;color:#002366;margin:0 0 8px}
+  .pdf-week{margin-bottom:14px;break-inside:avoid}.pdf-week h3{font-size:12px;margin:0 0 5px;color:#5a6a8a}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8px}th,td{border:1px solid #cfd6e3;vertical-align:top;padding:3px;height:34px}
+  thead th{background:#002366;color:white;font-size:9px}.pdf-time{width:44px;text-align:center;background:#eef1f6;color:#002366}
+  thead small{display:block;font-weight:normal;color:#cbd5e7;margin-top:2px}.pdf-lesson{border-left:3px solid #f6a017;background:#f3f6fb;padding:3px;margin-bottom:2px}
+  .pdf-lesson strong,.pdf-lesson span,.pdf-lesson small{display:block}.pdf-lesson strong{font-size:8px;color:#002366}.pdf-lesson small{color:#5a6a8a}
+  .pdf-empty{text-align:center;padding:60px;color:#718096}footer{font-size:8px;color:#7a869c;margin-top:7px;text-align:right}
+  </style></head><body><header><div><h1>UKVS Teaching Timetable</h1><p>${ttEscape(filter)}</p></div><div><p><strong>Academic year:</strong> ${academicYear}</p><p><strong>Generated:</strong> ${new Date().toLocaleString('en-GB',{timeZone:'Europe/London'})}</p></div></header>${content}<footer>UK time · Monday to Friday · one-hour lesson blocks</footer></body></html>`);
+  popup.document.close();popup.focus();setTimeout(()=>popup.print(),500);
+}
 function ttSessionHasClash(session){
   return ttState.sessions.some(other=>{
     if(other.id===session.id||other.scheduled===false||session.scheduled===false||other.monthKey!==session.monthKey||other.week!==session.week||other.day!==session.day||other.time!==session.time)return false;
@@ -1596,7 +1792,8 @@ function ttRenderGrid(){
       html+=`<div class="tt-cell" data-day="${day}" data-time="${time}" onclick="ttSelectCell(${day},'${time}',this)" ondragover="ttAllowDrop(event,this)" ondragleave="ttLeaveDrop(this)" ondrop="ttDropToCell(event,${day},'${time}',this)">`;
       sessions.forEach(s=>{
         const teacher=ttPerson(s.teacherId),studentNames=(s.studentIds||[]).map(id=>ttPerson(id)?.name).filter(Boolean);
-        html+=`<div class="tt-session ${ttSessionHasClash(s)?'clash':''}" draggable="true" ondragstart="ttDragStart(event,'${s.id}')" onclick="ttEditSession('${s.id}',event)"><strong>${ttEscape(ttCarrierTitle(s))}</strong><span>${ttEscape(teacher?.name||'Teacher not assigned')}</span><span>${ttEscape(studentNames.join(', ')||'No students')}</span></div>`;
+        const colour=ttColourFor(s);
+        html+=`<div class="tt-session ${ttSessionHasClash(s)?'clash':''}" style="border-left-color:${colour};background:${colour}18" draggable="true" ondragstart="ttDragStart(event,'${s.id}')" onclick="ttEditSession('${s.id}',event)"><strong>${ttEscape(ttCarrierTitle(s))}</strong><span>${ttEscape(teacher?.name||'Teacher not assigned')}</span><span>${ttEscape(studentNames.join(', ')||'No students')}</span></div>`;
       });
       html+='</div>';
     }
@@ -1607,11 +1804,12 @@ function ttCarrierTitle(session){
   return `${session.yearGroup||''} ${session.subject||''}${session.classGroup?' '+session.classGroup:''}`.trim();
 }
 function ttRenderCarriers(){
-  const key=ttPeriod().key,carriers=ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled===false);
+  const key=ttPeriod().key,carriers=ttState.sessions.filter(s=>s.monthKey===key&&s.scheduled===false&&ttSessionMatchesFilters(s));
   document.getElementById('ttCarrierCount').textContent=`${carriers.length} waiting`;
   document.getElementById('ttCarrierList').innerHTML=carriers.length?carriers.map(s=>{
     const teacher=ttPerson(s.teacherId),students=(s.studentIds||[]).map(id=>ttPerson(id)?.name).filter(Boolean);
-    return `<div class="tt-carrier" draggable="true" ondragstart="ttDragStart(event,'${s.id}')">
+    const colour=ttColourFor(s);
+    return `<div class="tt-carrier" style="border-left-color:${colour}" draggable="true" ondragstart="ttDragStart(event,'${s.id}')">
       <strong>${ttEscape(ttCarrierTitle(s))}</strong>
       <span>${ttEscape(teacher?.name||'Teacher not assigned')}</span>
       <span>${ttEscape(students.join(', ')||'No students')}</span>
