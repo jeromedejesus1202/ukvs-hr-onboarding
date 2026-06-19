@@ -186,7 +186,8 @@ begin
         and slot.day = p_day
         and slot.start_time = p_start_time
         and other_student.student_id = moving_student.student_id
-    );
+    )
+  having count(*) > 0;
 
   if v_conflict is not null then
     raise exception '%', v_conflict;
@@ -275,4 +276,3 @@ alter publication supabase_realtime add table public.people;
 alter publication supabase_realtime add table public.class_carriers;
 alter publication supabase_realtime add table public.carrier_students;
 alter publication supabase_realtime add table public.schedule_slots;
-

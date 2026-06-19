@@ -19,6 +19,12 @@ Shared employee onboarding and teaching timetable application for UKVS.
 6. Create the first application user.
 7. In **Table Editor > profiles**, change that user's role to `admin`.
 
+If the initial migration was installed before June 20, 2026, also run:
+
+`supabase/migrations/202606200002_fix_empty_student_clash.sql`
+
+This corrects an empty-result check that otherwise reports a student clash for every timetable placement.
+
 Available roles:
 
 - `admin`: manages users and all timetable data.
@@ -49,6 +55,15 @@ The `move_carrier` database function:
 Open `index.html` directly in a browser while connected to the internet. Sign in using a Supabase Authentication user. The public Supabase SDK is loaded from jsDelivr.
 
 When one signed-in user changes the timetable, other signed-in users receive the database update through Supabase Realtime.
+
+Timetable viewing tools include:
+
+- searchable teacher and student views;
+- year group, subject, and class-group filters;
+- clash-only display;
+- stable colours by subject, teacher, or year group;
+- monthly workload totals;
+- printable PDF views for a week, month, or complete academic year.
 
 ## Deployment
 
